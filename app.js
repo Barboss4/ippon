@@ -56,6 +56,19 @@ function shuffle(arr){
   return arr;
 }
 
+function isAtaqueCombinadoType(type){
+  return sameType(type, "tecnica de ataque combinado");
+}
+
+function isContraAtaqueType(type){
+  return sameType(type, "tecnica de contra ataque");
+}
+
+function isComboOuContraType(type){
+  return isAtaqueCombinadoType(type) || isContraAtaqueType(type);
+}
+
+
 function niceTypeLabel(type){
   if(type === "quiz_faixa_projecao") return "Quiz: Projeção por faixa";
   if(type === "vocabulario") return "Vocabulário";
@@ -72,8 +85,9 @@ function isVocabType(type){
 }
 
 function isTecnicaType(type){
-  return String(type || "").startsWith("tecnica");
+  return normType(type).startsWith("tecnica");
 }
+
 
 function vocabWord(it){
   return (it.palavra ?? it.nome ?? "").trim();
@@ -102,15 +116,16 @@ function isItemUsable(it, type){
   if(isVocabType(type)){
     return vocabWord(it).length > 0 && vocabMeaning(it).length > 0;
   }
+
+  // ataque combinado / contra ataque: precisa de nome e segunda_tecnica
+  if(isComboOuContraType(type)){
+    return techniqueName(it).length > 0 && String(it.segunda_tecnica ?? "").trim().length > 0;
+  }
+
+  // outras técnicas
   return techniqueName(it).length > 0;
 }
 
-function optionTextForItem(it, type){
-  if(isVocabType(type)){
-    return isVocabFlipOn() ? vocabWord(it) : vocabMeaning(it);
-  }
-  return techniqueName(it);
-}
 
 
 // Identificador estável do item (já que não existe id no JSON)
@@ -207,13 +222,10 @@ function makePools(){
       isProjecaoType(it.tipo) &&
       isItemUsable(it, it.tipo)
     );
-
     return;
   }
 
-  // ===== MODO ANTIGO (restaurado) =====
-
-  // 1) Perguntas: respeita o nível selecionado
+  // ===== MODO ANTIGO: sempre monta perguntas primeiro =====
   questionPool = DATA.filter(it =>
     Number(it.numero_faixa) <= level &&
     sameType(it.tipo, type) &&
@@ -221,13 +233,22 @@ function makePools(){
   );
   questionBag = shuffle([...questionPool]);
 
-  // 2) Alternativas: mesmo tipo em qualquer nível
+  // ===== Ataque combinado / contra ataque: alternativas = projeção =====
+  if(isComboOuContraType(type)){
+    optionPool = DATA.filter(it =>
+      isProjecaoType(it.tipo) &&
+      isItemUsable(it, it.tipo)
+    );
+    return;
+  }
+
+  // ===== Alternativas padrão: mesmo tipo em qualquer nível =====
   optionPool = DATA.filter(it =>
     sameType(it.tipo, type) &&
     isItemUsable(it, type)
   );
 
-  // 3) Fallback técnicas: qualquer tipo de técnica
+  // Fallback técnicas: qualquer tipo de técnica
   if(optionPool.length < 4 && isTecnicaType(type)){
     optionPool = DATA.filter(it =>
       isTecnicaType(it.tipo) &&
@@ -235,7 +256,7 @@ function makePools(){
     );
   }
 
-  // 4) Fallback vocabulário: vocabulário de qualquer nível
+  // Fallback vocabulário: vocabulário de qualquer nível
   if(optionPool.length < 4 && isVocabType(type)){
     optionPool = DATA.filter(it =>
       sameType(it.tipo, "vocabulario") &&
@@ -243,6 +264,7 @@ function makePools(){
     );
   }
 }
+
 
 
 function pickNextQuestion(){
@@ -297,6 +319,13 @@ function embedMediaOrPrompt(item, type){
     return;
   }
 
+  // Ataque combinado / contra ataque: sem vídeo, é pergunta textual
+  if(isComboOuContraType(type)){
+    elVideoBox.innerHTML = `<div class="placeholder">Responda escolhendo a técnica correta.</div>`;
+    return;
+  }
+
+
   const link = String(item.link || "").trim();
   if(!link){
     elVideoBox.innerHTML =
@@ -317,6 +346,13 @@ function embedMediaOrPrompt(item, type){
   });
 
   elVideoBox.appendChild(video);
+}
+
+function optionTextForItem(it, type){
+  if(isVocabType(type)){
+    return isVocabFlipOn() ? vocabWord(it) : vocabMeaning(it);
+  }
+  return techniqueName(it);
 }
 
 
@@ -504,12 +540,26 @@ function renderQuestion(item){
   }
 
   // ===== TÉCNICAS (modo antigo) =====
-  elPrompt.textContent = "Qual é o nome da técnica mostrada?";
+  if(isAtaqueCombinadoType(type)){
+  elPrompt.textContent = `Qual o ataque que combina com "${techniqueName(item)}"?`;
+  }else if(isContraAtaqueType(type)){
+    elPrompt.textContent = `Qual o contra ataque de "${techniqueName(item)}"?`;
+  }else{
+    elPrompt.textContent = "Qual é o nome da técnica mostrada?";
+  }
+
 
   embedMediaOrPrompt(item, type);
 
   elAnswers.innerHTML = "";
-  const { opts, correct } = buildOptions(item, type);
+
+  let pack;
+  if(isComboOuContraType(type)){
+    pack = buildOptionsComboOuContra(item);
+  }else{
+    pack = buildOptions(item, type);
+  }
+  const { opts, correct } = pack;
 
   opts.forEach(txt => {
     const btn = document.createElement("button");
@@ -623,8 +673,10 @@ elLevel.addEventListener("change", () => {
 });
 
 elType.addEventListener("change", () => {
+  updateTypeOptions();
   resetToNeedStart("Mudou o tipo. Clique em <code>Começar</code>.");
 });
+
 
 // Init
 if(!DATA.length){
@@ -696,4 +748,23 @@ function buildOptionsFaixaProjecao(faixaNumero){
 
   const opts = shuffle([...correctSet, ...distractors]);
   return { opts, correctSet, k };
-};
+}
+
+function buildOptionsComboOuContra(questionItem){
+  const correct = String(questionItem.segunda_tecnica ?? "").trim();
+  const options = new Set([correct]);
+
+  let guard = 0;
+  while(options.size < 4 && guard < 3000){
+    const it = optionPool[randInt(optionPool.length)]; // aqui optionPool já é projeção
+    const txt = techniqueName(it); // distrator = nome da técnica de projeção
+    if(txt && txt !== correct) options.add(txt);
+    guard++;
+  }
+
+  const opts = shuffle([...options]);
+  return { opts, correct };
+}
+
+
+;
