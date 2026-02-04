@@ -206,3 +206,15 @@ button:active{ transform: translateY(1px); }
   .answers{ grid-template-columns: 1fr; }
   .row{ grid-template-columns: 1fr; }
 }
+
+.vocab-question{
+  font-size: 100px;
+  line-height: 1.4;
+}
+
+.vocabFlip{
+  display:none;           /* o JS liga/desliga */
+  gap:8px;
+  align-items:center;
+  margin-top:10px;
+}
