@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quiz Judô</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>Quiz Judô</h1>
+    <p class="sub">Escolha a faixa/nível e o tipo, depois responda. Uma opção correta, três distratoras.</p>
+
+    <div class="grid">
+      <div class="card">
+        <div class="row">
+          <div>
+            <label for="level">Faixa / Nível</label>
+            <select id="level">
+              <option value="0">0 — Cinza/Azul</option>
+              <option value="1">1 — Amarela</option>
+              <option value="2">2 — Laranja</option>
+              <option value="3">3 — Verde</option>
+              <option value="4">4 — Roxa</option>
+              <option value="5">5 — (não usada no doc atual)</option>
+              <option value="6">6 — Marrom</option>
+            </select>
+          </div>
+          <div>
+            <label for="type">Tipo</label>
+            <select id="type">
+              <option value="vocabulario">Vocabulário</option>
+              <option value="tecnica de projeção">Técnica de projeção</option>
+              <option value="tecnica de solo">Técnica de solo</option>
+              <option value="tecnica de ataque combinado">Técnica de ataque combinado</option>
+              <option value="tecnica de contra ataque">Técnica de contra ataque</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="start" class="start">Começar</button>
+
+        <div class="divider"></div>
+
+        <p class="hint">
+          Regra: ao escolher nível <strong>N</strong>, o quiz usa apenas itens com <strong>numero_faixa ≤ N</strong>.
+        </p>
+      </div>
+
+      <div class="card">
+        <div class="questionTop">
+          <p class="prompt" id="prompt">Clique em <strong>Começar</strong> para gerar a primeira questão.</p>
+          <span class="badge" id="badge">—</span>
+        </div>
+
+        <div class="videoBox" id="videoBox">
+          <div class="placeholder">Sem mídia ainda. Quando o item tiver <code>link</code>, eu abro aqui.</div>
+        </div>
+
+        <div class="answers" id="answers"></div>
+
+        <div class="meta">
+          <div class="stats" id="stats">Acertos: 0 · Erros: 0</div>
+          <button id="next" class="next">Próximo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./data.js"></script>
+  <script src="./app.js" defer></script>
+</body>
+</html>
