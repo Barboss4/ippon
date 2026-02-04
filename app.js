@@ -26,6 +26,12 @@ let answered = false;
 let hits = 0;
 let misses = 0;
 
+let roundActive = false;
+let roundTotal = 0;
+let roundHits = 0;
+let roundMisses = 0;
+
+let roundIndex = 0; // quantas questões já foram exibidas
 
 function isVocabFlipOn(){
   return !!(elVocabFlip && elVocabFlip.checked);
@@ -131,7 +137,7 @@ function isItemUsable(it, type){
 // Identificador estável do item (já que não existe id no JSON)
 function itemKey(it){
   if(typeof it === "number") return `faixa|${it}`;
-  const main = (it.tipo === "vocabulario") ? (it.palavra ?? it.nome ?? "") : (it.nome ?? "");
+  const main = (sameType(it.tipo, "vocabulario")) ? (it.palavra ?? it.nome ?? "") : (it.nome ?? "");
   return `${it.tipo}|${it.numero_faixa}|${main}|${it.segunda_tecnica ?? ""}`;
 }
 
@@ -265,12 +271,14 @@ function makePools(){
   }
 }
 
-
-
 function pickNextQuestion(){
   if(questionPool.length === 0) return null;
 
   if(questionBag.length === 0){
+    // no modo prova, acabou = fim.
+    if(roundActive) return null;
+
+    // modo treino (antigo): reembaralha e continua
     questionBag = shuffle([...questionPool]);
   }
 
@@ -284,6 +292,7 @@ function pickNextQuestion(){
 
   return candidate;
 }
+
 
 function escapeHtml(s){
   return String(s)
@@ -414,7 +423,10 @@ function renderQuestion(item){
   const level = Number(elLevel.value);
   const type = elType.value;
 
-  elBadge.textContent = `Nível ≤ ${level} · ${niceTypeLabel(type)}`;
+  elBadge.textContent = roundActive
+  ? `Nível ≤ ${level} · ${niceTypeLabel(type)} · ${roundIndex}/${roundTotal}`
+  : `Nível ≤ ${level} · ${niceTypeLabel(type)}`;
+
 
   // ===== QUIZ POR FAIXA (multi-seleção) =====
   if(isFaixaQuizType(type)){
@@ -477,8 +489,14 @@ function renderQuestion(item){
       const pickedNoWrong = [...picked].every(v => correctSet.has(v));
       const perfect = pickedAllCorrect && pickedNoWrong;
 
-      if(perfect) hits++;
-      else misses++;
+      if(perfect){
+        hits++;
+        if(roundActive) roundHits++;
+      }else{
+        misses++;
+        if(roundActive) roundMisses++;
+      }
+
 
       elStats.textContent = `Acertos: ${hits} · Erros: ${misses}`;
       elNext.style.display = "inline-block";
@@ -521,9 +539,11 @@ function renderQuestion(item){
         if(txt === correct){
           btn.classList.add("ok");
           hits++;
+          if(roundActive) roundHits++;
         }else{
           btn.classList.add("bad");
           misses++;
+          if(roundActive) roundMisses++;
 
           const rightBtn = all.find(b => b.dataset.value === correct);
           if(rightBtn) rightBtn.classList.add("ok");
@@ -541,9 +561,11 @@ function renderQuestion(item){
 
   // ===== TÉCNICAS (modo antigo) =====
   if(isAtaqueCombinadoType(type)){
-  elPrompt.textContent = `Qual o ataque que combina com "${techniqueName(item)}"?`;
+    elPrompt.textContent =
+      `Qual o ataque que combina com "${techniqueName(item)}" na faixa ${item.faixa}?`;
   }else if(isContraAtaqueType(type)){
-    elPrompt.textContent = `Qual o contra ataque de "${techniqueName(item)}"?`;
+    elPrompt.textContent =
+      `Qual o contra ataque de "${techniqueName(item)}" na faixa ${item.faixa}?`;
   }else{
     elPrompt.textContent = "Qual é o nome da técnica mostrada?";
   }
@@ -578,9 +600,11 @@ function renderQuestion(item){
       if(txt === correct){
         btn.classList.add("ok");
         hits++;
+        if(roundActive) roundHits++;
       }else{
         btn.classList.add("bad");
         misses++;
+        if(roundActive) roundMisses++;
 
         const rightBtn = all.find(b => b.dataset.value === correct);
         if(rightBtn) rightBtn.classList.add("ok");
@@ -613,7 +637,6 @@ function resetToNeedStart(messageHtml){
   elNext.textContent = "Próxima";
 }
 
-
 function startOrRestart(){
   if(!Array.isArray(DATA) || DATA.length === 0){
     resetToNeedStart("Seu <code>data.js</code> está vazio (window.DATA não é um array ou não tem itens).");
@@ -631,11 +654,16 @@ function startOrRestart(){
   }
 
   if(!canBuild4Options(type)){
-    // Aqui entra o seu caso: 2 ou 3 itens no tipo. A pergunta pode existir, mas faltam distratores.
-    // Como você pediu, o código já tenta outros níveis do mesmo tipo; se ainda assim não der, tenta outras técnicas.
     resetToNeedStart("Ainda não consigo gerar 4 alternativas distintas para esse tipo. Adicione mais itens (ou aceite misturar mais tipos).");
     return;
   }
+
+  // inicia rodada (prova)
+  roundActive = true;
+  roundTotal = questionPool.length;
+  roundHits = 0;
+  roundMisses = 0;
+  roundIndex = 0;
 
   const item = pickNextQuestion();
   if(!item){
@@ -643,8 +671,10 @@ function startOrRestart(){
     return;
   }
 
+  roundIndex++;
   renderQuestion(item);
 }
+
 
 elStart.addEventListener("click", startOrRestart);
 
@@ -654,16 +684,16 @@ elNext.addEventListener("click", () => {
   if(!canBuild4Options(type)) return;
 
   const item = pickNextQuestion();
+
+  // se acabou o bag e está em rodada: finaliza
   if(!item){
-    questionBag = shuffle([...questionPool]);
-    const retry = pickNextQuestion();
-    if(!retry){
-      elPrompt.textContent = "Sem questões disponíveis. Verifique o pool.";
-      return;
+    if(roundActive){
+      finishRound();
     }
-    renderQuestion(retry);
     return;
   }
+
+  if(roundActive) roundIndex++;
   renderQuestion(item);
 });
 
@@ -764,6 +794,22 @@ function buildOptionsComboOuContra(questionItem){
 
   const opts = shuffle([...options]);
   return { opts, correct };
+}
+
+function finishRound(){
+  roundActive = false;
+
+  const total = roundTotal || 0;
+  const pct = total ? Math.round((roundHits / total) * 100) : 0;
+
+  elPrompt.textContent = `Fim da rodada. Você acertou ${roundHits} de ${total} (${pct}%).`;
+  elVideoBox.innerHTML = `<div class="placeholder">Rodada finalizada. Troque o tipo/nível e clique em Começar para outra rodada.</div>`;
+  elAnswers.innerHTML = "";
+  elNext.style.display = "none";
+
+  // Se quiser manter o placar global, não mexe em hits/misses aqui.
+  // Se quiser que rodada = placar, você pode sincronizar:
+  // hits = roundHits; misses = roundMisses;
 }
 
 
