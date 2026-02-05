@@ -8,7 +8,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "Rei-rô",
-    "significado": "Saudação no judô"
+    "significado": "SAUDAÇÃO NO JUDÔ"
   },
   {
     "tipo": "vocabulario",
@@ -18,7 +18,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "Tati-rei",
-    "significado": "Saudação no judô em pé"
+    "significado": "SAUDAÇÃO NO JUDÔ EM PÉ"
   },
   {
     "tipo": "vocabulario",
@@ -28,7 +28,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "Za-rei",
-    "significado": "Saudação no judô sentado"
+    "significado": "SAUDAÇÃO NO JUDÔ SENTADO"
   },
   {
     "tipo": "vocabulario",
@@ -38,7 +38,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "Shin-tai",
-    "significado": "Movimento no tatame"
+    "significado": "MOVIMENTO NO TATAME"
   },
   {
     "tipo": "vocabulario",
@@ -212,7 +212,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "Jigoro Kano",
-    "significado": "Fundador do judô"
+    "significado": "FUNDADOR DO JUDÔ"
   },
   {
     "tipo": "vocabulario",
@@ -222,7 +222,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "Judô",
-    "significado": "O caminho suave"
+    "significado": "O CAMINHO SUAVE"
   }
 
   // AMARELA

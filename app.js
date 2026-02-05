@@ -74,6 +74,10 @@ function isComboOuContraType(type){
   return isAtaqueCombinadoType(type) || isContraAtaqueType(type);
 }
 
+function isKanoQuestion(item){
+  return isVocabType(elType.value) && normType(vocabWord(item)) === normType("Jigoro Kano");
+}
+
 
 function niceTypeLabel(type){
   if(type === "quiz_faixa_projecao") return "Quiz: Projeção por faixa";
@@ -424,17 +428,14 @@ function renderQuestion(item){
   const type = elType.value;
 
   elBadge.textContent = roundActive
-  ? `Nível ≤ ${level} · ${niceTypeLabel(type)} · ${roundIndex}/${roundTotal}`
-  : `Nível ≤ ${level} · ${niceTypeLabel(type)}`;
-
+    ? `Nível ≤ ${level} · ${niceTypeLabel(type)} · ${roundIndex}/${roundTotal}`
+    : `Nível ≤ ${level} · ${niceTypeLabel(type)}`;
 
   // ===== QUIZ POR FAIXA (multi-seleção) =====
   if(isFaixaQuizType(type)){
     const faixaNumero = Number(item);
 
     elPrompt.textContent = `Quais são as técnicas de projeção da faixa ${faixaNumero}?`;
-
-    // placeholder do quiz
     embedMediaOrPrompt(item, type);
 
     elAnswers.innerHTML = "";
@@ -452,8 +453,9 @@ function renderQuestion(item){
       btn.addEventListener("click", () => {
         if(answered) return;
         const selected = btn.dataset.selected === "1";
-        btn.dataset.selected = selected ? "0" : "1";
-        btn.classList.toggle("selected", !selected);
+        const next = selected ? "0" : "1";
+        btn.dataset.selected = next;
+        btn.classList.toggle("selected", next === "1");
       });
 
       elAnswers.appendChild(btn);
@@ -497,7 +499,6 @@ function renderQuestion(item){
         if(roundActive) roundMisses++;
       }
 
-
       elStats.textContent = `Acertos: ${hits} · Erros: ${misses}`;
       elNext.style.display = "inline-block";
     });
@@ -506,12 +507,66 @@ function renderQuestion(item){
     return;
   }
 
-  // ===== VOCABULÁRIO (normal ou invertido) =====
+  // ===== VOCABULÁRIO (normal/invertido + questão especial Jigoro Kano) =====
   if(isVocabType(type)){
     const w = vocabWord(item);
     const m = vocabMeaning(item);
 
-    if(isVocabFlipOn && isVocabFlipOn()){
+    // questão especial: fundador do judô
+    if(normType(w) === normType("Jigoro Kano")){
+      elPrompt.textContent = "Quem é o fundador do judô?";
+      // se quiser mostrar vídeo, troque pela linha abaixo:
+      // embedMediaOrPrompt(item, type);
+      elVideoBox.innerHTML = `<div class="placeholder">Escolha a resposta correta.</div>`;
+
+      const correct = "Jigoro Kano";
+      const opts = shuffle([
+        correct,
+        "Julio Nagaita",
+        "Hagio Taje",
+        "Josmar Amaral"
+      ]);
+
+      elAnswers.innerHTML = "";
+      opts.forEach(txt => {
+        const btn = document.createElement("button");
+        btn.className = "ans";
+        btn.type = "button";
+        btn.textContent = txt;
+        btn.dataset.value = txt;
+
+        btn.addEventListener("click", () => {
+          if(answered) return;
+          answered = true;
+
+          const all = [...elAnswers.querySelectorAll("button.ans")];
+          all.forEach(b => b.disabled = true);
+
+          if(txt === correct){
+            btn.classList.add("ok");
+            hits++;
+            if(roundActive) roundHits++;
+          }else{
+            btn.classList.add("bad");
+            misses++;
+            if(roundActive) roundMisses++;
+
+            const rightBtn = all.find(b => b.dataset.value === correct);
+            if(rightBtn) rightBtn.classList.add("ok");
+          }
+
+          elStats.textContent = `Acertos: ${hits} · Erros: ${misses}`;
+          elNext.style.display = "inline-block";
+        });
+
+        elAnswers.appendChild(btn);
+      });
+
+      return;
+    }
+
+    // vocabulário normal/invertido
+    if(isVocabFlipOn()){
       elPrompt.textContent = `Como se escreve em japonês: "${m}"?`;
     }else{
       elPrompt.textContent = `O que significa "${w}"?`;
@@ -520,7 +575,8 @@ function renderQuestion(item){
     embedMediaOrPrompt(item, type);
 
     elAnswers.innerHTML = "";
-    const { opts, correct } = buildOptions(item, type);
+    const pack = buildOptions(item, type);
+    const { opts, correct } = pack;
 
     opts.forEach(txt => {
       const btn = document.createElement("button");
@@ -560,27 +616,25 @@ function renderQuestion(item){
   }
 
   // ===== TÉCNICAS (modo antigo) =====
+  const faixaLabel = (item && (item.faixa ?? item.numero_faixa)) ?? "";
   if(isAtaqueCombinadoType(type)){
     elPrompt.textContent =
-      `Qual o ataque que combina com "${techniqueName(item)}" na faixa ${item.faixa}?`;
+      `Qual o ataque que combina com "${techniqueName(item)}" na faixa ${faixaLabel}?`;
   }else if(isContraAtaqueType(type)){
     elPrompt.textContent =
-      `Qual o contra ataque de "${techniqueName(item)}" na faixa ${item.faixa}?`;
+      `Qual o contra ataque de "${techniqueName(item)}" na faixa ${faixaLabel}?`;
   }else{
     elPrompt.textContent = "Qual é o nome da técnica mostrada?";
   }
-
 
   embedMediaOrPrompt(item, type);
 
   elAnswers.innerHTML = "";
 
-  let pack;
-  if(isComboOuContraType(type)){
-    pack = buildOptionsComboOuContra(item);
-  }else{
-    pack = buildOptions(item, type);
-  }
+  const pack = isComboOuContraType(type)
+    ? buildOptionsComboOuContra(item)
+    : buildOptions(item, type);
+
   const { opts, correct } = pack;
 
   opts.forEach(txt => {
@@ -617,6 +671,7 @@ function renderQuestion(item){
     elAnswers.appendChild(btn);
   });
 }
+
 
 
 

@@ -218,3 +218,13 @@ button:active{ transform: translateY(1px); }
   align-items:center;
   margin-top:10px;
 }
+
+button.ans.selected{
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  font-weight: 700;
+}
+
+button.ans.selected{
+  transform: translateY(-1px);
+}
