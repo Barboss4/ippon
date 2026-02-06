@@ -281,7 +281,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "O-SOTO-GARI",
-    "link": "videos/teste.mp4",
+    "link": "videos/O-SOTO-GARI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -291,7 +291,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "DE-ASHI-BARAI",
-    "link": "videos/teste.mp4",
+    "link": "videos/DE-ASHI-BARAI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -301,7 +301,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "HIZA-GURUMA",
-    "link": "videos/teste.mp4",
+    "link": "videos/HIZA-GURUMA.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -311,7 +311,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "SASSAE-TSURI-KOMI-ASHI",
-    "link": "videos/teste.mp4",
+    "link": "videos/SASSAE-TSURI-KOMI-ASHI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -321,7 +321,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "UKY-GOSHI",
-    "link": "videos/teste.mp4",
+    "link": "videos/UKY-GOSHI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -331,7 +331,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "O-GOSHI",
-    "link": "videos/teste.mp4",
+    "link": "videos/O-GOSHI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -340,8 +340,18 @@ window.DATA = [
     "tipo": "tecnica de projeção",
     "faixa": "amarela",
     "numero_faixa": 1,
-    "nome": "UCHI -GARI",
-    "link": "videos/teste.mp4",
+    "nome": "O-UCHI-GARI",
+    "link": "videos/O-UCHI-GARI.mp4",
+    "segunda_tecnica": null,
+    "palavra": null,
+    "significado": null
+  },
+  {
+    "tipo": "tecnica de projeção",
+    "faixa": "amarela",
+    "numero_faixa": 1,
+    "nome": "SEOI-NAGE",
+    "link": "videos/SEOI-NAGE.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -351,7 +361,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "IPON-SEOI-NAGE",
-    "link": "videos/teste.mp4",
+    "link": "videos/IPON-SEOI-NAGE.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
