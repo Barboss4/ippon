@@ -726,7 +726,7 @@ window.DATA = [
     "significado": null
   }
   ,{
-    "tipo": "tecnica de solo",
+    "tipo": "tecnica de projeção",
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "KOSHI-GURUMA",

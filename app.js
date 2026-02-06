@@ -416,6 +416,19 @@ function canBuild4Options(type){
   return false;
 }
 
+function faixaLabelByNumero(n){
+  const labels = [
+    "Cinza/Azul",
+    "Amarela",
+    "Laranja",
+    "Verde",
+    "Roxa",
+    "Marrom",
+    "Preta",
+  ];
+  return labels[n] ?? String(n);
+}
+
 
 function renderQuestion(item){
   answered = false;
@@ -434,8 +447,9 @@ function renderQuestion(item){
   // ===== QUIZ POR FAIXA (multi-seleção) =====
   if(isFaixaQuizType(type)){
     const faixaNumero = Number(item);
+    const faixaLabel = faixaLabelByNumero(faixaNumero);
 
-    elPrompt.textContent = `Quais são as técnicas de projeção da faixa ${faixaNumero}?`;
+    elPrompt.textContent = `Quais são as técnicas de projeção da faixa ${faixaLabel}?`;
     embedMediaOrPrompt(item, type);
 
     elAnswers.innerHTML = "";
