@@ -107,7 +107,7 @@ window.DATA = [
     "nome": "SHIZEI",
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
-    "palavra": "Ukemi-waza",
+    "palavra": "SHIZEI",
     "significado": "POSTURAS"
   },  {
     "tipo": "vocabulario",
