@@ -107,7 +107,7 @@ window.DATA = [
     "nome": "SHIZEI",
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
-    "palavra": "SHIZEI",
+    "palavra": "Ukemi-waza",
     "significado": "POSTURAS"
   },  {
     "tipo": "vocabulario",
@@ -346,16 +346,7 @@ window.DATA = [
     "palavra": null,
     "significado": null
   },
-  {
-    "tipo": "tecnica de projeção",
-    "faixa": "amarela",
-    "numero_faixa": 1,
-    "nome": "SEOI-NAGE",
-    "link": "videos/SEOI-NAGE.mp4",
-    "segunda_tecnica": null,
-    "palavra": null,
-    "significado": null
-  },
+
   {
     "tipo": "tecnica de projeção",
     "faixa": "amarela",
@@ -371,7 +362,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "ERI-IPON-SEOI-NAGE",
-    "link": "videos/teste.mp4",
+    "link": "videos/ERI-IPON-SEOI-NAGE.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -381,7 +372,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "MOROTÊ-SEOI-NAGE",
-    "link": "videos/teste.mp4",
+    "link": "videos/MOROTÊ-SEOI-NAGE.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -391,7 +382,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "KATA-ERI-MOROTÊ-SEOI-NAGE",
-    "link": "videos/teste.mp4",
+    "link": "videos/KATA-ERI-MOROTÊ-SEOI-NAGE.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -401,7 +392,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "YÔ-ERI-MOROTÊ-SEOI-NAGE",
-    "link": "videos/teste.mp4",
+    "link": "videos/YÔ-ERI-MOROTÊ-SEOI-NAGE.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
