@@ -228,3 +228,14 @@ button.ans.selected{
 button.ans.selected{
   transform: translateY(-1px);
 }
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logo {
+  width: 60px;   /* ajuste conforme necessário */
+  height: auto;
+}
