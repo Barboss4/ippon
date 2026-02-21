@@ -891,7 +891,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "KO-SOTO-GAKE",
-  "link": "videos/teste.mp4",
+  "link": "videos/KO-SOTO-GAKE.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -901,7 +901,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "TSURI-GOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/TSURI-GOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": "KO/O",
   "significado": null
@@ -911,7 +911,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "YOKO-OTOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/YOKO-OTOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -921,7 +921,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "ASHI-GURUMA",
-  "link": "videos/teste.mp4",
+  "link": "videos/ASHI-GURUMA.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -931,7 +931,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "HANEI-GOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/HANEI-GOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -941,7 +941,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "HARAI-TSURI-KOMI-ASHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/HARAI-TSURI-KOMI-ASHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -951,7 +951,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "TOMOE-NAGE",
-  "link": "videos/teste.mp4",
+  "link": "videos/TOMOE-NAGE.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -961,7 +961,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "KATA-GURUMA",
-  "link": "videos/teste.mp4",
+  "link": "videos/KATA-GURUMA.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1167,7 +1167,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "SUMI-GAESHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/SUMI-GAESHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1177,7 +1177,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "TANI-OTOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/TANI-OTOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1187,7 +1187,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "HANEI-MAKI-KOMI",
-  "link": "videos/teste.mp4",
+  "link": "videos/HANEI-MAKI-KOMI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1197,7 +1197,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "SUKUI-NAGE",
-  "link": "videos/teste.mp4",
+  "link": "videos/SUKUI-NAGE.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1207,7 +1207,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "UTSURI-GOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/UTSURI-GOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1217,7 +1217,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "O-GURUMA",
-  "link": "videos/teste.mp4",
+  "link": "videos/O-GURUMA.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1227,7 +1227,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "O-SOTO-MAKI-KOMI",
-  "link": "videos/teste.mp4",
+  "link": "videos/O-SOTO-MAKI-KOMI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1237,7 +1237,7 @@ window.DATA = [
   "faixa": "roxa",
   "numero_faixa": 4,
   "nome": "UKI-OTOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/UKI-OTOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1483,7 +1483,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "O-SOTO-GURUMA",
-  "link": "videos/teste.mp4",
+  "link": "videos/O-SOTO-GURUMA.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1493,7 +1493,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "UKY-WAZA",
-  "link": "videos/teste.mp4",
+  "link": "videos/UKY-WAZA.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1503,7 +1503,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "YOKO-WAKARE",
-  "link": "videos/teste.mp4",
+  "link": "videos/YOKO-WAKARE.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1513,7 +1513,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "YOKO-GURUMA",
-  "link": "videos/teste.mp4",
+  "link": "videos/YOKO-GURUMA.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1523,7 +1523,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "USHIRO-GOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/USHIRO-GOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1533,7 +1533,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "URA-NAGE",
-  "link": "videos/teste.mp4",
+  "link": "videos/URA-NAGE.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1543,7 +1543,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "SUMI-OTOSHI",
-  "link": "videos/teste.mp4",
+  "link": "videos/SUMI-OTOSHI.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1553,7 +1553,7 @@ window.DATA = [
   "faixa": "marrom",
   "numero_faixa": 5,
   "nome": "YOKO-GAKE",
-  "link": "videos/teste.mp4",
+  "link": "videos/YOKO-GAKE.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
