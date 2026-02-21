@@ -78,7 +78,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "Kumi-kata",
-    "significado": "PEGADA NO KIMONO:"
+    "significado": "PEGADA NO KIMONO"
   },
   {
     "tipo": "vocabulario",
@@ -107,7 +107,7 @@ window.DATA = [
     "nome": "SHIZEI",
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
-    "palavra": "Ukemi-waza",
+    "palavra": "SHIZEI",
     "significado": "POSTURAS"
   },  {
     "tipo": "vocabulario",
@@ -346,7 +346,6 @@ window.DATA = [
     "palavra": null,
     "significado": null
   },
-
   {
     "tipo": "tecnica de projeção",
     "faixa": "amarela",
@@ -702,7 +701,7 @@ window.DATA = [
     "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": "SUTEMI-WAZA",
-    "significado": "TÉCNICAS DE SACRIFÍCIO:"
+    "significado": "TÉCNICAS DE SACRIFÍCIO"
   },
   
   // Laranja
@@ -711,7 +710,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "KO-SOTO-GARI",
-    "link": "videos/teste.mp4",
+    "link": "videos/KO-SOTO-GARI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -721,7 +720,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "KO-UCHI-GARI",
-    "link": "videos/teste.mp4",
+    "link": "videos/KO-UCHI-GARI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -731,7 +730,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "KOSHI-GURUMA",
-    "link": "videos/teste.mp4",
+    "link": "videos/KOSHI-GURUMA.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -741,7 +740,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "TSURI-KOMI-GOSHI",
-    "link": "videos/teste.mp4",
+    "link": "videos/TSURI-KOMI-GOSHI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -770,7 +769,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "TAI-OTOSHI",
-    "link": "videos/teste.mp4",
+    "link": "videos/TAI-OTOSHI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -780,7 +779,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "HARAI-GOSHI",
-    "link": "videos/teste.mp4",
+    "link": "videos/HARAI-GOSHI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -790,7 +789,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "UCHI-MATA",
-    "link": "videos/teste.mp4",
+    "link": "videos/UCHI-MATA.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
