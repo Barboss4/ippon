@@ -401,7 +401,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "HON-KEZA-GATAME",
-    "link": "videos/teste.mp4",
+    "link": "videos/HON-KEZA-GATAME.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -411,7 +411,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "KAMI-SHIRO-GATAME",
-    "link": "videos/teste.mp4",
+    "link": "videos/KAMI-SHIRO-GATAME.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -421,7 +421,7 @@ window.DATA = [
     "faixa": "amarela",
     "numero_faixa": 1,
     "nome": "YOKO-SHIRO-GATAME",
-    "link": "videos/teste.mp4",
+    "link": "videos/YOKO-SHIRO-GATAME.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -749,7 +749,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "SODÊ-TSURI-KOMI-GOSHI",
-    "link": "videos/SODÊ-TSURI-KOMI-GOSHI.mp4",
+    "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -759,7 +759,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "OKURI-ASHI-BARAI",
-    "link": "videos/OKURI-ASHI-BARAI.mp4",
+    "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -839,7 +839,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "KUZURÊ-KEZA-GATAME",
-    "link": "videos/teste.mp4",
+    "link": "videos/KUZURÊ-KEZA-GATAME.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -849,7 +849,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "MAKURA-KEZA-GATAME",
-    "link": "videos/teste.mp4",
+    "link": "videos/MAKURA-KEZA-GATAME.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -859,7 +859,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "KATA-GATAME 1",
-    "link": "videos/teste.mp4",
+    "link": "videos/KATA-GATAME 1.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -869,7 +869,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "KATA-GATAME 2",
-    "link": "videos/teste.mp4",
+    "link": "videos/KATA-GATAME 2.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -879,7 +879,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "USHIRO-KEZA-GATAME",
-    "link": "videos/teste.mp4",
+    "link": "videos/USHIRO-KEZA-GATAME.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -1014,7 +1014,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "KUZURE-KAMI-SHIHO-GATAME",
-  "link": "videos/teste.mp4",
+  "link": "videos/KUZURE-KAMI-SHIHO-GATAME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1024,7 +1024,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "KUZURE-YOKO-SHIHO-GATAME",
-  "link": "videos/teste.mp4",
+  "link": "videos/KUZURE-YOKO-SHIHO-GATAME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1034,7 +1034,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "TATE-SHIHO-GATAME",
-  "link": "videos/teste.mp4",
+  "link": "videos/TATE-SHIHO-GATAME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1045,7 +1045,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "NAMI-JUJI-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/NAMI-JUJI-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1055,7 +1055,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "KATA-JUJI-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/KATA-JUJI-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1065,7 +1065,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "GYAKU-JUJI-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/GYAKU-JUJI-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1075,7 +1075,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "SODE-GURUMA-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/SODE-GURUMA-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1085,7 +1085,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "HADAKA-JIME 1",
-  "link": "videos/teste.mp4",
+  "link": "videos/HADAKA-JIME 1.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1095,7 +1095,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "HADAKA-JIME 2",
-  "link": "videos/teste.mp4",
+  "link": "videos/HADAKA-JIME 2.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1105,7 +1105,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "HADAKA-JIME 3",
-  "link": "videos/teste.mp4",
+  "link": "videos/HADAKA-JIME 3.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1115,7 +1115,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "URA-SANKAKU-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/URA-SANKAKU-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1125,7 +1125,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "OMOTÊ-SANKAKU-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/OMOTÊ-SANKAKU-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1135,7 +1135,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "YOKO-SANKAKU-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/YOKO-SANKAKU-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
@@ -1145,7 +1145,7 @@ window.DATA = [
   "faixa": "verde",
   "numero_faixa": 3,
   "nome": "KATATE-JIME",
-  "link": "videos/teste.mp4",
+  "link": "videos/KATATE-JIME.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
