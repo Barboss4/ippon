@@ -881,5 +881,32 @@ function finishRound(){
   // hits = roundHits; misses = roundMisses;
 }
 
+const frasesJudo = [
+  "Conhecer-se é dominar-se; dominar-se é triunfar sobre si mesmo. Nas águas do rio da vida, chega mais longe quem nada quando deve, como deve e até onde deve.",
+
+  "Quem teme perder, já está vencido. Somente se aproxima da perfeição quem a procura com constância, sabedoria e, sobretudo, com humildade.",
+
+  "Quando verificares, com tristeza, que não sabes nada, terás feito teu primeiro progresso no aprendizado.",
+
+  "Nunca te orgulhes de haver vencido um adversário. Aquele que venceste hoje poderá derrotar-te amanhã. A única vitória que perdura é a que se conquista sobre a própria ignorância.",
+
+  "O verdadeiro judoca não se aperfeiçoa para lutar; luta para se aperfeiçoar. Saber cada dia um pouco e usá-lo todos os dias para o bem: este é o caminho dos verdadeiros judocas.",
+
+  "Judoca é aquele que possui inteligência para compreender aquilo que lhe ensinam, paciência para ensinar o que aprendeu aos seus semelhantes e fé para acreditar naquilo que não compreende.",
+
+  "Praticar judô é ensinar a inteligência a pensar com velocidade e exatidão, e o próprio corpo a obedecer com justeza. O corpo é uma arma cuja eficiência depende da precisão com que se usa a inteligência."
+];
+
+function mostrarFraseAleatoria() {
+  const elemento = document.getElementById("fraseJudo");
+
+  if (!elemento) return;
+
+  const indice = Math.floor(Math.random() * frasesJudo.length);
+  elemento.textContent = frasesJudo[indice];
+}
+
+mostrarFraseAleatoria();
+
 
 ;

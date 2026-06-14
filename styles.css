@@ -239,3 +239,25 @@ button.ans.selected{
   width: 60px;   /* ajuste conforme necessário */
   height: auto;
 }
+
+.school-link {
+  display: block;
+  margin: 8px 0 20px 0;
+  text-align: center; /* remova se quiser alinhado à esquerda */
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.school-link:hover {
+  text-decoration: underline;
+}
+
+.judo-quote {
+  margin-top: 8px;
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1.5;
+  opacity: 0.85;
+  text-align: center;
+}
