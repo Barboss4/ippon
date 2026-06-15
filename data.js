@@ -749,7 +749,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "SODÊ-TSURI-KOMI-GOSHI",
-    "link": "videos/teste.mp4",
+    "link": "videos/SODÊ-TSURI-KOMI-GOSHI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
