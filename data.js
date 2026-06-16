@@ -868,16 +868,6 @@ window.DATA = [
     "tipo": "tecnica de solo",
     "faixa": "laranja",
     "numero_faixa": 2,
-    "nome": "KATA-GATAME 2",
-    "link": "videos/KATA-GATAME 2.mp4",
-    "segunda_tecnica": null,
-    "palavra": null,
-    "significado": null
-  },
-  {
-    "tipo": "tecnica de solo",
-    "faixa": "laranja",
-    "numero_faixa": 2,
     "nome": "USHIRO-KEZA-GATAME",
     "link": "videos/USHIRO-KEZA-GATAME.mp4",
     "segunda_tecnica": null,
@@ -1086,26 +1076,6 @@ window.DATA = [
   "numero_faixa": 3,
   "nome": "HADAKA-JIME 1",
   "link": "videos/HADAKA-JIME 1.mp4",
-  "segunda_tecnica": null,
-  "palavra": null,
-  "significado": null
-},
-{
-  "tipo": "tecnica de solo",
-  "faixa": "verde",
-  "numero_faixa": 3,
-  "nome": "HADAKA-JIME 2",
-  "link": "videos/HADAKA-JIME 2.mp4",
-  "segunda_tecnica": null,
-  "palavra": null,
-  "significado": null
-},
-{
-  "tipo": "tecnica de solo",
-  "faixa": "verde",
-  "numero_faixa": 3,
-  "nome": "HADAKA-JIME 3",
-  "link": "videos/HADAKA-JIME 3.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
