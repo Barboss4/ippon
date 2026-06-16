@@ -759,7 +759,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "OKURI-ASHI-BARAI",
-    "link": "videos/"OKURI-ASHI-BARAI.mp4",
+    "link": "videos/OKURI-ASHI-BARAI.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
