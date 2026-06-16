@@ -882,7 +882,7 @@ function finishRound(){
 }
 
 const frasesJudo = [
-  "Conhecer-se é dominar-se; dominar-se é triunfar sobre si mesmo. Nas águas do rio da vida, chega mais longe quem nada quando deve, como deve e até onde deve.",
+  "Conhecer-se é dominar-se; dominar-se é triunfar. Nas águas do rio da vida, chega mais longe quem nada quando deve, como deve e até onde deve.",
 
   "Quem teme perder, já está vencido. Somente se aproxima da perfeição quem a procura com constância, sabedoria e, sobretudo, com humildade.",
 
