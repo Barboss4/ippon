@@ -1626,6 +1626,7 @@ kbd {
 
 .exam-question-copy {
   max-width: 840px;
+  scroll-margin-top: 18px;
 }
 
 .exam-question-copy h1 {

@@ -395,6 +395,24 @@
     bindExamSetup();
   }
 
+  function scrollExamQuestionIntoView() {
+    const questionCopy = document.querySelector(".exam-question-copy");
+    if (!questionCopy) return;
+
+    window.requestAnimationFrame(() => {
+      questionCopy.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function revealExamAdvanceButton() {
+    const advanceButton = document.getElementById("examAdvance");
+    if (!advanceButton) return;
+
+    window.requestAnimationFrame(() => {
+      advanceButton.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+
   function renderExamSession(state) {
     const main = document.getElementById("modeMain");
     const question = state.questions[state.index];
@@ -449,6 +467,7 @@
         main.querySelectorAll(".exam-answer").forEach((item) => item.classList.remove("is-selected"));
         button.classList.add("is-selected");
         document.getElementById("examAdvance").disabled = false;
+        revealExamAdvanceButton();
       });
     });
 
@@ -466,7 +485,7 @@
       else {
         saveActiveExam(state);
         renderExamSession(state);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        scrollExamQuestionIntoView();
       }
     });
   }
