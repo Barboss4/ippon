@@ -2,94 +2,194 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Quiz Judô</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#07111f" />
+  <meta name="description" content="Treine vocabulário e técnicas de judô com o quiz da Associação Esportiva Ippon." />
+  <title>Ippon Quiz — Treino de Judô</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="wrap">
-    <div class="header">
-      <img src="./logo.png" alt="Logo Quiz Judô" class="logo">
-      <h1>Quiz Judô</h1>
-    </div>
+  <a class="skip-link" href="#quiz">Ir para o quiz</a>
 
-    <a 
-      href="https://academiaippon.com.br/web/" 
-      target="_blank" 
-      rel="noopener" 
-      class="school-link"
-    >
-      Visite a Academia Ippon
-    </a>
-    <p class="sub">Escolha a faixa/nível e o tipo, depois responda. Uma opção correta, três distratoras.</p>
+  <div id="specialMode" hidden></div>
 
+  <div class="page-glow page-glow--one" aria-hidden="true"></div>
+  <div class="page-glow page-glow--two" aria-hidden="true"></div>
 
-    <p id="fraseJudo" class="judo-quote"></p>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Ippon Quiz — início">
+        <span class="brand-mark">
+          <img src="./Logo.png" alt="" class="logo" />
+        </span>
+        <span class="brand-copy">
+          <span>Associação Esportiva</span>
+          <strong>Ippon Quiz</strong>
+        </span>
+      </a>
 
-    
-    <div class="grid">
-      <div class="card">
-        <div class="row">
-          <div>
-            <label for="level">Faixa / Nível</label>
-            <select id="level">
-              <option value="0">0 — Cinza/Azul</option>
-              <option value="1">1 — Amarela</option>
-              <option value="2">2 — Laranja</option>
-              <option value="3">3 — Verde</option>
-              <option value="4">4 — Roxa</option>
-              <option value="5">5 — Marrom</option>
-              <option value="6">6 — Preta</option>
-            </select>
+      <a
+        href="https://academiaippon.com.br/web/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="school-link"
+      >
+        Conheça a academia
+        <span aria-hidden="true">↗</span>
+      </a>
+    </header>
+
+    <main id="top">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> Treine a mente. Domine o tatame.</p>
+          <h1 id="hero-title">Conhecimento também<br /><em>faz parte do treino.</em></h1>
+          <p class="hero-intro">
+            Escolha sua faixa, teste o vocabulário e reconheça técnicas no seu ritmo.
+            Cada resposta é mais um passo até o ippon.
+          </p>
+        </div>
+
+        <aside class="quote-card" aria-label="Inspiração do judô">
+          <span class="quote-mark" aria-hidden="true">“</span>
+          <blockquote id="fraseJudo">O verdadeiro judoca luta para se aperfeiçoar.</blockquote>
+          <p>Princípios do judô</p>
+        </aside>
+      </section>
+
+      <section class="score-strip" aria-label="Resumo da sessão">
+        <div class="score-item">
+          <span class="score-icon" aria-hidden="true">問</span>
+          <div><strong id="availableCount">0</strong><small>questões disponíveis</small></div>
+        </div>
+        <div class="score-item">
+          <span class="score-icon score-icon--flame" aria-hidden="true">火</span>
+          <div><strong id="streakCount">0</strong><small>melhor sequência</small></div>
+        </div>
+        <div class="score-item">
+          <span class="score-icon score-icon--target" aria-hidden="true">的</span>
+          <div><strong id="accuracyValue">—</strong><small>precisão na sessão</small></div>
+        </div>
+      </section>
+
+      <section class="quiz-shell" id="quiz" aria-label="Quiz de judô">
+        <aside class="setup-card">
+          <div class="section-heading">
+            <p class="eyebrow"><span></span> Prepare a rodada</p>
+            <h2>Escolha seu treino</h2>
+            <p>O conteúdo acompanha o nível selecionado e inclui as faixas anteriores.</p>
           </div>
-          <div>
-            <label for="type">Tipo</label>
-            <select id="type">
-              <option value="vocabulario">Vocabulário</option>
-              <option value="tecnica de projeção">Técnica de projeção</option>
-              <option value="tecnica de solo">Técnica de solo</option>
-              <option value="tecnica de ataque combinado">Técnica de ataque combinado</option>
-              <option value="tecnica de contra ataque">Técnica de contra ataque</option>
-              <option value="quiz_faixa_projecao">Quiz: Projeção por faixa</option>
-            </select>
+
+          <div class="form-field">
+            <label for="level"><span>01</span> Faixa / nível</label>
+            <div class="select-wrap">
+              <select id="level">
+                <option value="0">Cinza / Azul</option>
+                <option value="1">Amarela</option>
+                <option value="2">Laranja</option>
+                <option value="3">Verde</option>
+                <option value="4">Roxa</option>
+                <option value="5">Marrom</option>
+                <option value="6">Preta</option>
+              </select>
+            </div>
           </div>
-        </div>
 
-        <button id="start" class="start">Começar</button>
+          <div class="belt-preview" id="beltPreview" data-level="0">
+            <span class="belt-knot" aria-hidden="true"></span>
+            <span class="belt-line" aria-hidden="true"></span>
+            <div>
+              <small>Conteúdo liberado até</small>
+              <strong id="beltName">Faixa Cinza / Azul</strong>
+            </div>
+          </div>
 
-        <label id="wrapVocabFlip" style="display:none; gap:8px; align-items:center;">
-          <input type="checkbox" id="vocabFlip">
-          Inverter vocabulário (Significado → Japonês)
-        </label>
+          <div class="form-field">
+            <label for="type"><span>02</span> Modalidade</label>
+            <div class="select-wrap">
+              <select id="type">
+                <option value="vocabulario">Vocabulário</option>
+                <option value="tecnica de projeção">Técnicas de projeção</option>
+                <option value="tecnica de solo">Técnicas de solo</option>
+                <option value="tecnica de ataque combinado">Ataques combinados</option>
+                <option value="tecnica de contra ataque">Contra-ataques</option>
+                <option value="quiz_faixa_projecao">Projeções por faixa</option>
+              </select>
+            </div>
+          </div>
 
-        <div class="divider"></div>
+          <label id="wrapVocabFlip" class="toggle-row">
+            <input type="checkbox" id="vocabFlip" />
+            <span class="toggle" aria-hidden="true"></span>
+            <span>
+              <strong>Modo inverso</strong>
+              <small>Significado → Japonês</small>
+            </span>
+          </label>
 
-        <p class="hint">
-          
-        </p>
-      </div>
+          <button id="start" class="start" type="button">
+            <span>Começar treino</span>
+            <span class="button-arrow" aria-hidden="true">→</span>
+          </button>
 
-      <div class="card">
-        <div class="questionTop">
-          <p class="prompt" id="prompt">Clique em <strong>Começar</strong> para gerar a primeira questão.</p>
-          <span class="badge" id="badge">—</span>
-        </div>
+          <p class="keyboard-tip"><kbd>1</kbd>–<kbd>4</kbd> para responder <span>·</span> <kbd>Enter</kbd> para avançar</p>
+        </aside>
 
-        <div class="videoBox" id="videoBox">
-          <div class="placeholder">Sem mídia ainda. Quando o item tiver <code>link</code>, eu abro aqui.</div>
-        </div>
+        <article class="quiz-card" aria-labelledby="prompt">
+          <div class="quiz-topline">
+            <div>
+              <p class="quiz-status" id="progressText">Aguardando seu treino</p>
+              <span class="badge" id="badge">Pronto</span>
+            </div>
+            <div class="live-score" aria-label="Placar atual">
+              <span><i class="dot dot--ok"></i><strong id="hitCount">0</strong> acertos</span>
+              <span><i class="dot dot--bad"></i><strong id="missCount">0</strong> erros</span>
+            </div>
+          </div>
 
-        <div class="answers" id="answers"></div>
+          <div class="progress-track" aria-hidden="true">
+            <span id="progressFill"></span>
+          </div>
 
-        <div class="meta">
-          <div class="stats" id="stats">Acertos: 0 · Erros: 0</div>
-          <button id="next" class="next">Próximo</button>
-        </div>
-      </div>
-    </div>
+          <div class="question-copy">
+            <p class="question-kicker">Desafio atual</p>
+            <h2 class="prompt" id="prompt">Tudo pronto para começar?</h2>
+            <p class="question-helper" id="questionHelper">Configure sua rodada ao lado e aperte “Começar treino”.</p>
+          </div>
+
+          <div class="videoBox is-empty" id="videoBox">
+            <div class="placeholder">
+              <span class="placeholder-symbol" aria-hidden="true">礼</span>
+              <strong>Rei</strong>
+              <small>Prepare-se, cumprimente e comece.</small>
+            </div>
+          </div>
+
+          <div class="answers" id="answers" aria-live="polite"></div>
+
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+
+          <footer class="question-footer">
+            <div class="stats" id="stats">Sessão: 0 acertos · 0 erros</div>
+            <button id="next" class="next" type="button">
+              Próxima questão <span aria-hidden="true">→</span>
+            </button>
+          </footer>
+        </article>
+      </section>
+
+    </main>
+
+    <footer class="site-footer">
+      <p>Feito para quem leva o espírito do judô além do tatame.</p>
+      <span>Ippon Quiz <b>·</b> Anápolis — GO</span>
+    </footer>
   </div>
 
+  <div class="confetti-layer" id="confettiLayer" aria-hidden="true"></div>
+
   <script src="./data.js"></script>
+  <script src="./records.js" defer></script>
   <script src="./app.js" defer></script>
 </body>
 </html>

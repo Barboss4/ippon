@@ -1,9 +1,10 @@
 const DATA = Array.isArray(window.DATA) ? window.DATA : [];
 
 const elLevel = document.getElementById("level");
-const elType  = document.getElementById("type");
+const elType = document.getElementById("type");
 const elStart = document.getElementById("start");
 const elPrompt = document.getElementById("prompt");
+const elQuestionHelper = document.getElementById("questionHelper");
 const elBadge = document.getElementById("badge");
 const elVideoBox = document.getElementById("videoBox");
 const elAnswers = document.getElementById("answers");
@@ -11,295 +12,154 @@ const elNext = document.getElementById("next");
 const elStats = document.getElementById("stats");
 const elVocabFlip = document.getElementById("vocabFlip");
 const elWrapVocabFlip = document.getElementById("wrapVocabFlip");
+const elProgressFill = document.getElementById("progressFill");
+const elProgressText = document.getElementById("progressText");
+const elFeedback = document.getElementById("feedback");
+const elHitCount = document.getElementById("hitCount");
+const elMissCount = document.getElementById("missCount");
+const elAvailableCount = document.getElementById("availableCount");
+const elStreakCount = document.getElementById("streakCount");
+const elAccuracyValue = document.getElementById("accuracyValue");
+const elBeltPreview = document.getElementById("beltPreview");
+const elBeltName = document.getElementById("beltName");
+const elConfettiLayer = document.getElementById("confettiLayer");
 
-// Itens possíveis de cair como "pergunta" (respeita nível)
+const BELT_LABELS = [
+  "Cinza / Azul",
+  "Amarela",
+  "Laranja",
+  "Verde",
+  "Roxa",
+  "Marrom",
+  "Preta",
+];
+
+const SUCCESS_MESSAGES = [
+  "Ippon! Resposta certa.",
+  "Boa técnica! Você acertou.",
+  "Excelente leitura de jogo.",
+  "Acertou em cheio. Continue assim!",
+];
+
 let questionPool = [];
 let questionBag = [];
-
-// Itens possíveis de virar alternativa (pode usar outros níveis, e se preciso, outros tipos de técnica)
 let optionPool = [];
-
 let current = null;
 let lastId = null;
 let answered = false;
 
 let hits = 0;
 let misses = 0;
+let streak = 0;
+let bestStreak = 0;
 
 let roundActive = false;
 let roundTotal = 0;
 let roundHits = 0;
 let roundMisses = 0;
+let roundIndex = 0;
 
-let roundIndex = 0; // quantas questões já foram exibidas
-
-function isVocabFlipOn(){
-  return !!(elVocabFlip && elVocabFlip.checked);
-}
-
-
-function randInt(max){
+function randInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-function normType(s){
-  return String(s ?? "")
+function shuffle(items) {
+  const array = [...items];
+  for (let index = array.length - 1; index > 0; index -= 1) {
+    const randomIndex = randInt(index + 1);
+    [array[index], array[randomIndex]] = [array[randomIndex], array[index]];
+  }
+  return array;
+}
+
+function normType(value) {
+  return String(value ?? "")
     .trim()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, ""); // remove acentos
+    .replace(/[\u0300-\u036f]/g, "");
 }
 
-function sameType(a, b){
-  return normType(a) === normType(b);
+function sameType(first, second) {
+  return normType(first) === normType(second);
 }
 
-function shuffle(arr){
-  for(let i = arr.length - 1; i > 0; i--){
-    const j = randInt(i + 1);
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr;
-}
-
-function isAtaqueCombinadoType(type){
-  return sameType(type, "tecnica de ataque combinado");
-}
-
-function isContraAtaqueType(type){
-  return sameType(type, "tecnica de contra ataque");
-}
-
-function isComboOuContraType(type){
-  return isAtaqueCombinadoType(type) || isContraAtaqueType(type);
-}
-
-function isKanoQuestion(item){
-  return isVocabType(elType.value) && normType(vocabWord(item)) === normType("Jigoro Kano");
-}
-
-
-function niceTypeLabel(type){
-  if(type === "quiz_faixa_projecao") return "Quiz: Projeção por faixa";
-  if(type === "vocabulario") return "Vocabulário";
-  if(type === "tecnica de projeção") return "Técnica de projeção";
-  if(type === "tecnica de solo") return "Técnica de solo";
-  if(type === "tecnica de ataque combinado") return "Técnica de ataque combinado";
-  if(type === "tecnica de contra ataque") return "Técnica de contra ataque";
-  return type;
-}
-
-
-function isVocabType(type){
+function isVocabType(type) {
   return type === "vocabulario";
 }
 
-function isTecnicaType(type){
+function isTechniqueType(type) {
   return normType(type).startsWith("tecnica");
 }
 
-
-function vocabWord(it){
-  return (it.palavra ?? it.nome ?? "").trim();
-}
-
-function vocabMeaning(it){
-  return (it.significado ?? "").trim();
-}
-
-function techniqueName(it){
-  return (it.nome ?? "").trim();
-}
-
-function isFaixaQuizType(type){
-  return type === "quiz_faixa_projecao";
-}
-
-function isProjecaoType(type){
+function isProjectionType(type) {
   return sameType(type, "tecnica de projeção");
 }
 
-
-
-
-function isItemUsable(it, type){
-  if(isVocabType(type)){
-    return vocabWord(it).length > 0 && vocabMeaning(it).length > 0;
-  }
-
-  // ataque combinado / contra ataque: precisa de nome e segunda_tecnica
-  if(isComboOuContraType(type)){
-    return techniqueName(it).length > 0 && String(it.segunda_tecnica ?? "").trim().length > 0;
-  }
-
-  // outras técnicas
-  return techniqueName(it).length > 0;
+function isCombinedType(type) {
+  return sameType(type, "tecnica de ataque combinado");
 }
 
-
-
-// Identificador estável do item (já que não existe id no JSON)
-function itemKey(it){
-  if(typeof it === "number") return `faixa|${it}`;
-  const main = (sameType(it.tipo, "vocabulario")) ? (it.palavra ?? it.nome ?? "") : (it.nome ?? "");
-  return `${it.tipo}|${it.numero_faixa}|${main}|${it.segunda_tecnica ?? ""}`;
+function isCounterType(type) {
+  return sameType(type, "tecnica de contra ataque");
 }
 
-
-// ====== UI: esconder/desabilitar tipos sem PERGUNTAS possíveis no nível ======
-function updateTypeOptions(){
-  const level = Number(elLevel.value);
-  const opts = [...elType.options];
-
-  // inicializa contagem por valor real do <option>
-  const counts = Object.fromEntries(opts.map(o => [o.value, 0]));
-
-  for(const it of DATA){
-    if(Number(it.numero_faixa) > level) continue;
-
-    for(const opt of opts){
-      // regra especial: esse "tipo" não existe no JSON
-      if(opt.value === "quiz_faixa_projecao") continue;
-
-      if(!sameType(it.tipo, opt.value)) continue;
-
-      // vocabulário: sempre tratar como "vocabulario" (sem acento) para isItemUsable
-      if(sameType(opt.value, "vocabulario")){
-        if(!isItemUsable(it, "vocabulario")) continue;
-      }else{
-        if(!isItemUsable(it, opt.value)) continue;
-      }
-
-      counts[opt.value] = (counts[opt.value] || 0) + 1;
-    }
-  }
-
-  // habilita quiz por faixa se existir ao menos 1 técnica de projeção até o nível
-  if("quiz_faixa_projecao" in counts){
-    let faixaQuizCount = 0;
-    for(const it of DATA){
-      if(Number(it.numero_faixa) > level) continue;
-      if(!isProjecaoType(it.tipo)) continue;
-      if(!isItemUsable(it, it.tipo)) continue;
-      faixaQuizCount++;
-    }
-    counts["quiz_faixa_projecao"] = faixaQuizCount;
-  }
-
-  // aplica hide/disable
-  opts.forEach(opt => {
-    const c = counts[opt.value] || 0;
-    const disabled = c === 0;
-    opt.disabled = disabled;
-    opt.hidden = disabled;
-  });
-
-  // corrige seleção se ficou inválida
-  const sel = elType.selectedOptions[0];
-  if(sel && sel.disabled){
-    const firstEnabled = opts.find(o => !o.disabled);
-    if(firstEnabled) elType.value = firstEnabled.value;
-  }
-
-  // mostra/esconde o toggle de inverter vocabulário
-  if(elWrapVocabFlip){
-    elWrapVocabFlip.style.display = isVocabType(elType.value) ? "inline-flex" : "none";
-  }
+function isComboOrCounterType(type) {
+  return isCombinedType(type) || isCounterType(type);
 }
 
-
-
-// ====== Pool / Sorteio ======
-function makePools(){
-  const level = Number(elLevel.value);
-  const type = elType.value;
-
-  // ===== NOVO MODO: quiz por faixa (técnicas de projeção) =====
-  if(isFaixaQuizType(type)){
-    const setFaixas = new Set();
-    for(const it of DATA){
-      const faixa = Number(it.numero_faixa);
-      if(faixa > level) continue;
-      if(!isProjecaoType(it.tipo)) continue;
-      if(!isItemUsable(it, it.tipo)) continue;
-      setFaixas.add(faixa);
-    }
-
-    questionPool = [...setFaixas];
-    questionBag = shuffle([...questionPool]);
-
-    optionPool = DATA.filter(it =>
-      isProjecaoType(it.tipo) &&
-      isItemUsable(it, it.tipo)
-    );
-    return;
-  }
-
-  // ===== MODO ANTIGO: sempre monta perguntas primeiro =====
-  questionPool = DATA.filter(it =>
-    Number(it.numero_faixa) <= level &&
-    sameType(it.tipo, type) &&
-    isItemUsable(it, type)
-  );
-  questionBag = shuffle([...questionPool]);
-
-  // ===== Ataque combinado / contra ataque: alternativas = projeção =====
-  if(isComboOuContraType(type)){
-    optionPool = DATA.filter(it =>
-      isProjecaoType(it.tipo) &&
-      isItemUsable(it, it.tipo)
-    );
-    return;
-  }
-
-  // ===== Alternativas padrão: mesmo tipo em qualquer nível =====
-  optionPool = DATA.filter(it =>
-    sameType(it.tipo, type) &&
-    isItemUsable(it, type)
-  );
-
-  // Fallback técnicas: qualquer tipo de técnica
-  if(optionPool.length < 4 && isTecnicaType(type)){
-    optionPool = DATA.filter(it =>
-      isTecnicaType(it.tipo) &&
-      isItemUsable(it, it.tipo)
-    );
-  }
-
-  // Fallback vocabulário: vocabulário de qualquer nível
-  if(optionPool.length < 4 && isVocabType(type)){
-    optionPool = DATA.filter(it =>
-      sameType(it.tipo, "vocabulario") &&
-      isItemUsable(it, "vocabulario")
-    );
-  }
+function isBeltQuizType(type) {
+  return type === "quiz_faixa_projecao";
 }
 
-function pickNextQuestion(){
-  if(questionPool.length === 0) return null;
-
-  if(questionBag.length === 0){
-    // no modo prova, acabou = fim.
-    if(roundActive) return null;
-
-    // modo treino (antigo): reembaralha e continua
-    questionBag = shuffle([...questionPool]);
-  }
-
-  let candidate = questionBag.pop();
-
-  if(lastId && itemKey(candidate) === lastId && questionPool.length > 1){
-    const alt = questionBag.pop();
-    questionBag.unshift(candidate);
-    candidate = alt ?? candidate;
-  }
-
-  return candidate;
+function isVocabFlipOn() {
+  return Boolean(elVocabFlip?.checked);
 }
 
+function vocabWord(item) {
+  return String(item?.palavra ?? item?.nome ?? "").trim();
+}
 
-function escapeHtml(s){
-  return String(s)
+function vocabMeaning(item) {
+  return String(item?.significado ?? "").trim();
+}
+
+function techniqueName(item) {
+  return String(item?.nome ?? "").trim();
+}
+
+function itemKey(item) {
+  if (typeof item === "number") return `faixa|${item}`;
+  const main = sameType(item?.tipo, "vocabulario")
+    ? item?.palavra ?? item?.nome ?? ""
+    : item?.nome ?? "";
+  return `${item?.tipo}|${item?.numero_faixa}|${main}|${item?.segunda_tecnica ?? ""}`;
+}
+
+function niceTypeLabel(type) {
+  const labels = {
+    vocabulario: "Vocabulário",
+    "tecnica de projeção": "Projeções",
+    "tecnica de solo": "Técnicas de solo",
+    "tecnica de ataque combinado": "Ataques combinados",
+    "tecnica de contra ataque": "Contra-ataques",
+    quiz_faixa_projecao: "Projeções por faixa",
+  };
+  return labels[type] ?? type;
+}
+
+function isItemUsable(item, type) {
+  if (isVocabType(type)) {
+    return vocabWord(item).length > 0 && vocabMeaning(item).length > 0;
+  }
+  if (isComboOrCounterType(type)) {
+    return techniqueName(item).length > 0 && String(item?.segunda_tecnica ?? "").trim().length > 0;
+  }
+  return techniqueName(item).length > 0;
+}
+
+function escapeHtml(value) {
+  return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -307,606 +167,725 @@ function escapeHtml(s){
     .replaceAll("'", "&#039;");
 }
 
-function embedMediaOrPrompt(item, type){
+function updateSelectionPreview() {
+  const level = Number(elLevel.value);
+  elBeltPreview.dataset.level = String(level);
+  elBeltName.textContent = `Faixa ${BELT_LABELS[level] ?? level}`;
+  updateAvailableCount();
+}
+
+function updateTypeOptions() {
+  const level = Number(elLevel.value);
+  const options = [...elType.options];
+  const counts = Object.fromEntries(options.map((option) => [option.value, 0]));
+
+  for (const item of DATA) {
+    if (Number(item.numero_faixa) > level) continue;
+
+    for (const option of options) {
+      if (option.value === "quiz_faixa_projecao") continue;
+      if (!sameType(item.tipo, option.value)) continue;
+      if (!isItemUsable(item, option.value)) continue;
+      counts[option.value] += 1;
+    }
+  }
+
+  const projectionBelts = new Set(
+    DATA.filter(
+      (item) =>
+        Number(item.numero_faixa) <= level &&
+        isProjectionType(item.tipo) &&
+        isItemUsable(item, item.tipo),
+    ).map((item) => Number(item.numero_faixa)),
+  );
+  counts.quiz_faixa_projecao = projectionBelts.size;
+
+  options.forEach((option) => {
+    const disabled = counts[option.value] === 0;
+    option.disabled = disabled;
+    option.hidden = disabled;
+  });
+
+  if (elType.selectedOptions[0]?.disabled) {
+    const firstEnabled = options.find((option) => !option.disabled);
+    if (firstEnabled) elType.value = firstEnabled.value;
+  }
+
+  elWrapVocabFlip.style.display = isVocabType(elType.value) ? "flex" : "none";
+  updateSelectionPreview();
+}
+
+function getAvailableQuestionCount() {
+  const level = Number(elLevel.value);
+  const type = elType.value;
+
+  if (isBeltQuizType(type)) {
+    return new Set(
+      DATA.filter(
+        (item) =>
+          Number(item.numero_faixa) <= level &&
+          isProjectionType(item.tipo) &&
+          isItemUsable(item, item.tipo),
+      ).map((item) => Number(item.numero_faixa)),
+    ).size;
+  }
+
+  return DATA.filter(
+    (item) =>
+      Number(item.numero_faixa) <= level &&
+      sameType(item.tipo, type) &&
+      isItemUsable(item, type),
+  ).length;
+}
+
+function updateAvailableCount() {
+  elAvailableCount.textContent = String(getAvailableQuestionCount());
+}
+
+function updateScoreboard() {
+  const total = hits + misses;
+  const accuracy = total ? `${Math.round((hits / total) * 100)}%` : "—";
+
+  elHitCount.textContent = String(hits);
+  elMissCount.textContent = String(misses);
+  elStreakCount.textContent = String(bestStreak);
+  elAccuracyValue.textContent = accuracy;
+  elStats.textContent = `Sessão: ${hits} ${hits === 1 ? "acerto" : "acertos"} · ${misses} ${misses === 1 ? "erro" : "erros"}`;
+}
+
+function makePools() {
+  const level = Number(elLevel.value);
+  const type = elType.value;
+
+  if (isBeltQuizType(type)) {
+    const belts = new Set();
+    for (const item of DATA) {
+      if (Number(item.numero_faixa) > level) continue;
+      if (!isProjectionType(item.tipo) || !isItemUsable(item, item.tipo)) continue;
+      belts.add(Number(item.numero_faixa));
+    }
+    questionPool = [...belts];
+    questionBag = shuffle(questionPool);
+    optionPool = DATA.filter(
+      (item) => isProjectionType(item.tipo) && isItemUsable(item, item.tipo),
+    );
+    return;
+  }
+
+  questionPool = DATA.filter(
+    (item) =>
+      Number(item.numero_faixa) <= level &&
+      sameType(item.tipo, type) &&
+      isItemUsable(item, type),
+  );
+  questionBag = shuffle(questionPool);
+
+  if (isComboOrCounterType(type)) {
+    optionPool = DATA.filter(
+      (item) => isProjectionType(item.tipo) && isItemUsable(item, item.tipo),
+    );
+    return;
+  }
+
+  optionPool = DATA.filter(
+    (item) => sameType(item.tipo, type) && isItemUsable(item, type),
+  );
+
+  if (optionPool.length < 4 && isTechniqueType(type)) {
+    optionPool = DATA.filter(
+      (item) => isTechniqueType(item.tipo) && isItemUsable(item, item.tipo),
+    );
+  }
+
+  if (optionPool.length < 4 && isVocabType(type)) {
+    optionPool = DATA.filter(
+      (item) => sameType(item.tipo, "vocabulario") && isItemUsable(item, "vocabulario"),
+    );
+  }
+}
+
+function pickNextQuestion() {
+  if (questionPool.length === 0) return null;
+  if (questionBag.length === 0) return roundActive ? null : shuffle(questionPool).pop();
+
+  let candidate = questionBag.pop();
+  if (lastId && itemKey(candidate) === lastId && questionPool.length > 1) {
+    const alternative = questionBag.pop();
+    questionBag.unshift(candidate);
+    candidate = alternative ?? candidate;
+  }
+  return candidate;
+}
+
+function optionTextForItem(item, type) {
+  if (isVocabType(type)) return isVocabFlipOn() ? vocabWord(item) : vocabMeaning(item);
+  return techniqueName(item);
+}
+
+function buildOptions(correctItem, type) {
+  const correct = optionTextForItem(correctItem, type);
+  const options = new Set([correct]);
+  let guard = 0;
+
+  while (options.size < 4 && guard < 1000) {
+    const item = optionPool[randInt(optionPool.length)];
+    const text = optionTextForItem(item, type);
+    if (text && text !== correct) options.add(text);
+    guard += 1;
+  }
+
+  return { options: shuffle(options), correct };
+}
+
+function buildOptionsComboOrCounter(questionItem) {
+  const correct = String(questionItem.segunda_tecnica ?? "").trim();
+  const options = new Set([correct]);
+  let guard = 0;
+
+  while (options.size < 4 && guard < 3000) {
+    const item = optionPool[randInt(optionPool.length)];
+    const text = techniqueName(item);
+    if (text && text !== correct) options.add(text);
+    guard += 1;
+  }
+
+  return { options: shuffle(options), correct };
+}
+
+function buildOptionsBeltProjection(beltNumber) {
+  const correctItems = optionPool.filter(
+    (item) => Number(item.numero_faixa) === Number(beltNumber),
+  );
+  const correctTexts = [...new Set(correctItems.map(techniqueName).filter(Boolean))];
+  const correctSet = new Set(correctTexts);
+  const otherItems = optionPool.filter(
+    (item) => Number(item.numero_faixa) !== Number(beltNumber),
+  );
+  const distractors = new Set();
+  let guard = 0;
+
+  while (distractors.size < correctTexts.length * 2 && guard < 5000) {
+    const item = otherItems[randInt(otherItems.length)];
+    const text = techniqueName(item);
+    if (text && !correctSet.has(text)) distractors.add(text);
+    guard += 1;
+  }
+
+  return {
+    options: shuffle([...correctSet, ...distractors]),
+    correctSet,
+    correctCount: correctTexts.length,
+  };
+}
+
+function canBuildOptions(type) {
+  if (isBeltQuizType(type)) {
+    return questionPool.some((belt) => {
+      const correctCount = optionPool.filter(
+        (item) => Number(item.numero_faixa) === Number(belt),
+      ).length;
+      const otherCount = optionPool.filter(
+        (item) => Number(item.numero_faixa) !== Number(belt),
+      ).length;
+      return correctCount > 0 && otherCount >= correctCount * 2;
+    });
+  }
+
+  const distinctOptions = new Set(
+    optionPool.map((item) => optionTextForItem(item, type)).filter(Boolean),
+  );
+  return distinctOptions.size >= 4;
+}
+
+function setEmptyMedia({ symbol = "礼", title, detail }) {
+  elVideoBox.classList.remove("is-hidden");
+  elVideoBox.classList.add("is-empty");
+  elVideoBox.innerHTML = `
+    <div class="placeholder">
+      <span class="placeholder-symbol" aria-hidden="true">${escapeHtml(symbol)}</span>
+      <strong>${escapeHtml(title)}</strong>
+      <small>${detail}</small>
+    </div>
+  `;
+}
+
+function hideMedia() {
+  elVideoBox.className = "videoBox is-hidden";
+  elVideoBox.innerHTML = "";
+}
+
+function embedMediaOrPrompt(item, type) {
   elVideoBox.innerHTML = "";
 
-  // Vocabulário: pergunta textual (normal ou invertido)
-  if(isVocabType(type)){
-    const w = vocabWord(item);
-    const m = vocabMeaning(item);
-
-    if(isVocabFlipOn && isVocabFlipOn()){
-      elVideoBox.innerHTML =
-        `<div class="placeholder">Como se escreve em japonês: <code>${escapeHtml(m)}</code>?</div>`;
-    }else{
-      elVideoBox.innerHTML =
-        `<div class="placeholder">O que significa <code>${escapeHtml(w)}</code>?</div>`;
-    }
+  if (isVocabType(type)) {
+    hideMedia();
     return;
   }
 
-  // No quiz por faixa, não tem vídeo
-  if(isFaixaQuizType(type)){
-    elVideoBox.innerHTML =
-      `<div class="placeholder">Marque todas as corretas e clique em Confirmar.</div>`;
+  if (isBeltQuizType(type)) {
+    hideMedia();
     return;
   }
 
-  // Ataque combinado / contra ataque: sem vídeo, é pergunta textual
-  if(isComboOuContraType(type)){
-    elVideoBox.innerHTML = `<div class="placeholder">Responda escolhendo a técnica correta.</div>`;
+  if (isComboOrCounterType(type)) {
+    hideMedia();
     return;
   }
-
 
   const link = String(item.link || "").trim();
-  if(!link){
-    elVideoBox.innerHTML =
-      `<div class="placeholder">Técnica sem vídeo cadastrado.</div>`;
+  if (!link) {
+    setEmptyMedia({
+      symbol: "映",
+      title: "Técnica sem vídeo",
+      detail: "Use as alternativas para continuar o treino.",
+    });
     return;
   }
 
+  elVideoBox.classList.remove("is-empty", "is-hidden");
   const video = document.createElement("video");
   video.src = link;
   video.controls = true;
   video.preload = "metadata";
-  video.style.width = "100%";
-  video.style.height = "100%";
-
+  video.setAttribute("playsinline", "");
   video.addEventListener("error", () => {
-    elVideoBox.innerHTML =
-      `<div class="placeholder">Não consegui abrir o vídeo <code>${escapeHtml(link)}</code>.</div>`;
+    setEmptyMedia({
+      symbol: "映",
+      title: "Vídeo indisponível",
+      detail: `Não foi possível abrir <code>${escapeHtml(link)}</code>.`,
+    });
   });
-
   elVideoBox.appendChild(video);
 }
 
-function optionTextForItem(it, type){
-  if(isVocabType(type)){
-    return isVocabFlipOn() ? vocabWord(it) : vocabMeaning(it);
-  }
-  return techniqueName(it);
+function answerKey(index) {
+  return index < 9 ? String(index + 1) : "•";
 }
 
-
-
-function buildOptions(correctItem, type){
-  const correct = optionTextForItem(correctItem, type);
-  const options = new Set([correct]);
-
-  let guard = 0;
-  while(options.size < 4 && guard < 1000){
-    const it = optionPool[randInt(optionPool.length)];
-    const txt = optionTextForItem(it, type);
-    if(txt && txt !== correct){
-      options.add(txt);
-    }
-    guard++;
-  }
-
-  const opts = shuffle([...options]);
-  return { opts, correct };
+function makeAnswerButton(text, index) {
+  const button = document.createElement("button");
+  button.className = "ans";
+  button.type = "button";
+  button.textContent = text;
+  button.dataset.value = text;
+  button.dataset.key = answerKey(index);
+  return button;
 }
 
-function canBuild4Options(type){
-  if(isFaixaQuizType(type)){
-    // precisa ter pelo menos 1 faixa perguntável e, para alguma faixa,
-    // conseguir gerar 2*k distratores (k corretas)
-    if(questionPool.length === 0) return false;
-
-    // valida a “pior” faixa: se k=1, precisa 2 distratores; se k=4, precisa 8, etc.
-    for(const faixa of questionPool){
-      const correctCount = optionPool.filter(it => Number(it.numero_faixa) === Number(faixa)).length;
-      if(correctCount <= 0) continue;
-      const otherCount = optionPool.filter(it => Number(it.numero_faixa) !== Number(faixa)).length;
-
-      // distratores são 2*k, então tem que existir base suficiente.
-      if(otherCount >= 2 * correctCount) return true;
-    }
-    return false;
-  }
-
-  // modo antigo: 4 alternativas distintas
-  const set = new Set();
-  for(const it of optionPool){
-    const txt = optionTextForItem(it, type);
-    if(txt) set.add(txt);
-    if(set.size >= 4) return true;
-  }
-  return false;
+function showFeedback(correct) {
+  elFeedback.className = `feedback show ${correct ? "success" : "error"}`;
+  elFeedback.innerHTML = correct
+    ? `<span aria-hidden="true">✓</span> ${SUCCESS_MESSAGES[randInt(SUCCESS_MESSAGES.length)]}`
+    : '<span aria-hidden="true">↺</span> Quase! A resposta correta está marcada em verde.';
 }
 
-function faixaLabelByNumero(n){
-  const labels = [
-    "Cinza/Azul",
-    "Amarela",
-    "Laranja",
-    "Verde",
-    "Roxa",
-    "Marrom",
-    "Preta",
-  ];
-  return labels[n] ?? String(n);
+function burstConfetti(amount = 18) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const colors = ["#ffd400", "#3451ff", "#55d995", "#f7f5ee"];
+  const fragment = document.createDocumentFragment();
+
+  for (let index = 0; index < amount; index += 1) {
+    const piece = document.createElement("span");
+    piece.className = "confetti";
+    piece.style.left = `${8 + Math.random() * 84}%`;
+    piece.style.background = colors[index % colors.length];
+    piece.style.animationDelay = `${Math.random() * 0.16}s`;
+    piece.style.setProperty("--drift", `${-110 + Math.random() * 220}px`);
+    piece.style.setProperty("--spin", `${360 + Math.random() * 720}deg`);
+    fragment.appendChild(piece);
+    window.setTimeout(() => piece.remove(), 2300);
+  }
+  elConfettiLayer.appendChild(fragment);
 }
 
+function isCompactViewport() {
+  return window.matchMedia("(max-width: 980px), (max-height: 820px)").matches;
+}
 
-function renderQuestion(item){
-  answered = false;
-  current = item;
-  lastId = itemKey(item);
-  elNext.style.display = "none";
-  elNext.textContent = "Próxima";
-
-  const level = Number(elLevel.value);
-  const type = elType.value;
-
-  elBadge.textContent = roundActive
-    ? `Nível ≤ ${level} · ${niceTypeLabel(type)} · ${roundIndex}/${roundTotal}`
-    : `Nível ≤ ${level} · ${niceTypeLabel(type)}`;
-
-  // ===== QUIZ POR FAIXA (multi-seleção) =====
-  if(isFaixaQuizType(type)){
-    const faixaNumero = Number(item);
-    const faixaLabel = faixaLabelByNumero(faixaNumero);
-
-    elPrompt.textContent = `Quais são as técnicas de projeção da faixa ${faixaLabel}?`;
-    embedMediaOrPrompt(item, type);
-
-    elAnswers.innerHTML = "";
-
-    const { opts, correctSet, k } = buildOptionsFaixaProjecao(faixaNumero);
-
-    opts.forEach(txt => {
-      const btn = document.createElement("button");
-      btn.className = "ans";
-      btn.type = "button";
-      btn.textContent = txt;
-      btn.dataset.value = txt;
-      btn.dataset.selected = "0";
-
-      btn.addEventListener("click", () => {
-        if(answered) return;
-        const selected = btn.dataset.selected === "1";
-        const next = selected ? "0" : "1";
-        btn.dataset.selected = next;
-        btn.classList.toggle("selected", next === "1");
-      });
-
-      elAnswers.appendChild(btn);
+function scrollQuestionIntoView() {
+  if (!isCompactViewport()) return;
+  window.requestAnimationFrame(() => {
+    document.querySelector(".question-copy")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
     });
-
-    const confirm = document.createElement("button");
-    confirm.type = "button";
-    confirm.className = "confirm";
-    confirm.textContent = `Confirmar (${k} corretas)`;
-
-    confirm.addEventListener("click", () => {
-      if(answered) return;
-      answered = true;
-
-      const all = [...elAnswers.querySelectorAll("button.ans")];
-      const picked = new Set(
-        all.filter(b => b.dataset.selected === "1").map(b => b.dataset.value)
-      );
-
-      all.forEach(b => b.disabled = true);
-      confirm.disabled = true;
-
-      all.forEach(b => {
-        const v = b.dataset.value;
-        const isCorrect = correctSet.has(v);
-        const didPick = picked.has(v);
-
-        if(isCorrect) b.classList.add("ok");
-        if(didPick && !isCorrect) b.classList.add("bad");
-      });
-
-      const pickedAllCorrect = [...correctSet].every(v => picked.has(v));
-      const pickedNoWrong = [...picked].every(v => correctSet.has(v));
-      const perfect = pickedAllCorrect && pickedNoWrong;
-
-      if(perfect){
-        hits++;
-        if(roundActive) roundHits++;
-      }else{
-        misses++;
-        if(roundActive) roundMisses++;
-      }
-
-      elStats.textContent = `Acertos: ${hits} · Erros: ${misses}`;
-      elNext.style.display = "inline-block";
-    });
-
-    elAnswers.appendChild(confirm);
-    return;
-  }
-
-  // ===== VOCABULÁRIO (normal/invertido + questão especial Jigoro Kano) =====
-  if(isVocabType(type)){
-    const w = vocabWord(item);
-    const m = vocabMeaning(item);
-
-    // questão especial: fundador do judô
-    if(normType(w) === normType("Jigoro Kano")){
-      elPrompt.textContent = "Quem é o fundador do judô?";
-      // se quiser mostrar vídeo, troque pela linha abaixo:
-      // embedMediaOrPrompt(item, type);
-      elVideoBox.innerHTML = `<div class="placeholder">Escolha a resposta correta.</div>`;
-
-      const correct = "Jigoro Kano";
-      const opts = shuffle([
-        correct,
-        "Julio Nagaita",
-        "Hagio Taje",
-        "Josmar Amaral"
-      ]);
-
-      elAnswers.innerHTML = "";
-      opts.forEach(txt => {
-        const btn = document.createElement("button");
-        btn.className = "ans";
-        btn.type = "button";
-        btn.textContent = txt;
-        btn.dataset.value = txt;
-
-        btn.addEventListener("click", () => {
-          if(answered) return;
-          answered = true;
-
-          const all = [...elAnswers.querySelectorAll("button.ans")];
-          all.forEach(b => b.disabled = true);
-
-          if(txt === correct){
-            btn.classList.add("ok");
-            hits++;
-            if(roundActive) roundHits++;
-          }else{
-            btn.classList.add("bad");
-            misses++;
-            if(roundActive) roundMisses++;
-
-            const rightBtn = all.find(b => b.dataset.value === correct);
-            if(rightBtn) rightBtn.classList.add("ok");
-          }
-
-          elStats.textContent = `Acertos: ${hits} · Erros: ${misses}`;
-          elNext.style.display = "inline-block";
-        });
-
-        elAnswers.appendChild(btn);
-      });
-
-      return;
-    }
-
-    // vocabulário normal/invertido
-    if(isVocabFlipOn()){
-      elPrompt.textContent = `Como se escreve em japonês: "${m}"?`;
-    }else{
-      elPrompt.textContent = `O que significa "${w}"?`;
-    }
-
-    embedMediaOrPrompt(item, type);
-
-    elAnswers.innerHTML = "";
-    const pack = buildOptions(item, type);
-    const { opts, correct } = pack;
-
-    opts.forEach(txt => {
-      const btn = document.createElement("button");
-      btn.className = "ans";
-      btn.type = "button";
-      btn.textContent = txt;
-      btn.dataset.value = txt;
-
-      btn.addEventListener("click", () => {
-        if(answered) return;
-        answered = true;
-
-        const all = [...elAnswers.querySelectorAll("button.ans")];
-        all.forEach(b => b.disabled = true);
-
-        if(txt === correct){
-          btn.classList.add("ok");
-          hits++;
-          if(roundActive) roundHits++;
-        }else{
-          btn.classList.add("bad");
-          misses++;
-          if(roundActive) roundMisses++;
-
-          const rightBtn = all.find(b => b.dataset.value === correct);
-          if(rightBtn) rightBtn.classList.add("ok");
-        }
-
-        elStats.textContent = `Acertos: ${hits} · Erros: ${misses}`;
-        elNext.style.display = "inline-block";
-      });
-
-      elAnswers.appendChild(btn);
-    });
-
-    return;
-  }
-
-  // ===== TÉCNICAS (modo antigo) =====
-  const faixaLabel = (item && (item.faixa ?? item.numero_faixa)) ?? "";
-  if(isAtaqueCombinadoType(type)){
-    elPrompt.textContent =
-      `Qual o ataque que combina com "${techniqueName(item)}" na faixa ${faixaLabel}?`;
-  }else if(isContraAtaqueType(type)){
-    elPrompt.textContent =
-      `Qual o contra ataque de "${techniqueName(item)}" na faixa ${faixaLabel}?`;
-  }else{
-    elPrompt.textContent = "Qual é o nome da técnica mostrada?";
-  }
-
-  embedMediaOrPrompt(item, type);
-
-  elAnswers.innerHTML = "";
-
-  const pack = isComboOuContraType(type)
-    ? buildOptionsComboOuContra(item)
-    : buildOptions(item, type);
-
-  const { opts, correct } = pack;
-
-  opts.forEach(txt => {
-    const btn = document.createElement("button");
-    btn.className = "ans";
-    btn.type = "button";
-    btn.textContent = txt;
-    btn.dataset.value = txt;
-
-    btn.addEventListener("click", () => {
-      if(answered) return;
-      answered = true;
-
-      const all = [...elAnswers.querySelectorAll("button.ans")];
-      all.forEach(b => b.disabled = true);
-
-      if(txt === correct){
-        btn.classList.add("ok");
-        hits++;
-        if(roundActive) roundHits++;
-      }else{
-        btn.classList.add("bad");
-        misses++;
-        if(roundActive) roundMisses++;
-
-        const rightBtn = all.find(b => b.dataset.value === correct);
-        if(rightBtn) rightBtn.classList.add("ok");
-      }
-
-      elStats.textContent = `Acertos: ${hits} · Erros: ${misses}`;
-      elNext.style.display = "inline-block";
-    });
-
-    elAnswers.appendChild(btn);
   });
 }
 
+function keepNextButtonVisible() {
+  if (!isCompactViewport()) return;
+  window.requestAnimationFrame(() => {
+    elNext.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+}
 
+function registerResult(correct) {
+  if (correct) {
+    hits += 1;
+    roundHits += 1;
+    streak += 1;
+    bestStreak = Math.max(bestStreak, streak);
+    burstConfetti(streak >= 3 ? 26 : 14);
+  } else {
+    misses += 1;
+    roundMisses += 1;
+    streak = 0;
+  }
 
+  updateScoreboard();
+  showFeedback(correct);
+  elNext.style.display = "inline-flex";
+  elNext.innerHTML = roundIndex >= roundTotal
+    ? 'Ver resultado <span aria-hidden="true">→</span>'
+    : 'Próxima questão <span aria-hidden="true">→</span>';
+  keepNextButtonVisible();
+}
 
-function resetToNeedStart(messageHtml){
+function renderSingleChoice(options, correct) {
+  elAnswers.innerHTML = "";
+
+  options.forEach((text, index) => {
+    const button = makeAnswerButton(text, index);
+    button.addEventListener("click", () => {
+      if (answered) return;
+      answered = true;
+
+      const allButtons = [...elAnswers.querySelectorAll("button.ans")];
+      allButtons.forEach((answer) => { answer.disabled = true; });
+
+      const isCorrect = text === correct;
+      if (isCorrect) {
+        button.classList.add("ok");
+      } else {
+        button.classList.add("bad");
+        allButtons.find((answer) => answer.dataset.value === correct)?.classList.add("ok");
+      }
+      registerResult(isCorrect);
+    });
+    elAnswers.appendChild(button);
+  });
+}
+
+function renderBeltQuestion(beltNumber) {
+  const label = BELT_LABELS[Number(beltNumber)] ?? String(beltNumber);
+  elPrompt.textContent = `Quais projeções pertencem à faixa ${label}?`;
+  elQuestionHelper.textContent = "Marque todas as alternativas corretas e confirme sua seleção.";
+  embedMediaOrPrompt(beltNumber, elType.value);
+
+  const { options, correctSet, correctCount } = buildOptionsBeltProjection(beltNumber);
+  elAnswers.innerHTML = "";
+
+  options.forEach((text, index) => {
+    const button = makeAnswerButton(text, index);
+    button.dataset.selected = "0";
+    button.addEventListener("click", () => {
+      if (answered) return;
+      const selected = button.dataset.selected === "1";
+      button.dataset.selected = selected ? "0" : "1";
+      button.classList.toggle("selected", !selected);
+    });
+    elAnswers.appendChild(button);
+  });
+
+  const confirm = document.createElement("button");
+  confirm.type = "button";
+  confirm.className = "confirm";
+  confirm.textContent = `Confirmar seleção · ${correctCount} corretas`;
+  confirm.addEventListener("click", () => {
+    if (answered) return;
+    answered = true;
+
+    const buttons = [...elAnswers.querySelectorAll("button.ans")];
+    const picked = new Set(
+      buttons.filter((button) => button.dataset.selected === "1").map((button) => button.dataset.value),
+    );
+
+    buttons.forEach((button) => {
+      button.disabled = true;
+      const value = button.dataset.value;
+      if (correctSet.has(value)) button.classList.add("ok");
+      if (picked.has(value) && !correctSet.has(value)) button.classList.add("bad");
+    });
+    confirm.disabled = true;
+
+    const pickedAllCorrect = [...correctSet].every((value) => picked.has(value));
+    const pickedNoWrong = [...picked].every((value) => correctSet.has(value));
+    registerResult(pickedAllCorrect && pickedNoWrong);
+  });
+  elAnswers.appendChild(confirm);
+}
+
+function renderQuestion(item) {
+  answered = false;
+  current = item;
+  lastId = itemKey(item);
+  elFeedback.className = "feedback";
+  elFeedback.textContent = "";
+  elNext.style.display = "none";
+
+  const level = Number(elLevel.value);
+  const type = elType.value;
+  const progress = roundTotal ? Math.round((roundIndex / roundTotal) * 100) : 0;
+
+  elProgressFill.style.width = `${progress}%`;
+  elProgressText.textContent = `Questão ${roundIndex} de ${roundTotal}`;
+  elBadge.textContent = `${BELT_LABELS[level]} · ${niceTypeLabel(type)}`;
+
+  if (isBeltQuizType(type)) {
+    renderBeltQuestion(Number(item));
+    return;
+  }
+
+  if (isVocabType(type)) {
+    const word = vocabWord(item);
+    const meaning = vocabMeaning(item);
+
+    if (normType(word) === normType("Jigoro Kano")) {
+      elPrompt.textContent = "Quem é o fundador do judô?";
+      elQuestionHelper.textContent = "Escolha o nome correto entre as alternativas.";
+      hideMedia();
+      renderSingleChoice(
+        shuffle(["Jigoro Kano", "Julio Nagaita", "Hagio Taje", "Josmar Amaral"]),
+        "Jigoro Kano",
+      );
+      return;
+    }
+
+    elPrompt.textContent = isVocabFlipOn()
+      ? `Como se escreve em japonês: “${meaning}”?`
+      : `O que significa “${word}”?`;
+    elQuestionHelper.textContent = isVocabFlipOn()
+      ? "Reconheça o termo japonês correspondente."
+      : "Escolha o significado correto.";
+    embedMediaOrPrompt(item, type);
+    const pack = buildOptions(item, type);
+    renderSingleChoice(pack.options, pack.correct);
+    return;
+  }
+
+  const beltLabel = item?.faixa ?? BELT_LABELS[Number(item?.numero_faixa)] ?? "";
+  if (isCombinedType(type)) {
+    elPrompt.textContent = `Qual ataque combina com “${techniqueName(item)}”?`;
+    elQuestionHelper.textContent = `Combinação prevista para a faixa ${beltLabel}.`;
+  } else if (isCounterType(type)) {
+    elPrompt.textContent = `Qual é o contra-ataque de “${techniqueName(item)}”?`;
+    elQuestionHelper.textContent = `Contra-ataque previsto para a faixa ${beltLabel}.`;
+  } else {
+    elPrompt.textContent = "Qual é o nome da técnica mostrada?";
+    elQuestionHelper.textContent = "Observe o movimento e escolha a alternativa correta.";
+  }
+
+  embedMediaOrPrompt(item, type);
+  const pack = isComboOrCounterType(type)
+    ? buildOptionsComboOrCounter(item)
+    : buildOptions(item, type);
+  renderSingleChoice(pack.options, pack.correct);
+}
+
+function resetToNeedStart(message) {
+  document.body.classList.remove("round-running");
   questionPool = [];
   questionBag = [];
   optionPool = [];
-
   current = null;
   lastId = null;
   answered = false;
+  roundActive = false;
+  roundTotal = 0;
+  roundHits = 0;
+  roundMisses = 0;
+  roundIndex = 0;
 
   elAnswers.innerHTML = "";
-  elVideoBox.innerHTML = `<div class="placeholder">${messageHtml || "Clique em Começar para gerar a primeira questão."}</div>`;
-  elPrompt.textContent = "Clique em Começar para gerar a primeira questão.";
-  elBadge.textContent = "—";
+  elFeedback.className = "feedback";
+  elFeedback.textContent = "";
+  elPrompt.textContent = "Tudo pronto para começar?";
+  elQuestionHelper.textContent = message;
+  elBadge.textContent = "Pronto";
+  elProgressText.textContent = "Aguardando seu treino";
+  elProgressFill.style.width = "0%";
   elNext.style.display = "none";
-  elNext.textContent = "Próxima";
+  setEmptyMedia({
+    symbol: "礼",
+    title: "Rei",
+    detail: "Prepare-se, cumprimente e comece.",
+  });
 }
 
-function startOrRestart(){
-  if(!Array.isArray(DATA) || DATA.length === 0){
-    resetToNeedStart("Seu <code>data.js</code> está vazio (window.DATA não é um array ou não tem itens).");
+function startOrRestart() {
+  if (window.IpponRecords && !window.IpponRecords.ensureTrainingProfile(startOrRestart)) {
+    return;
+  }
+
+  if (!DATA.length) {
+    resetToNeedStart("Não encontrei os dados do quiz.");
     return;
   }
 
   updateTypeOptions();
   makePools();
-
   const type = elType.value;
 
-  if(questionPool.length === 0){
-    resetToNeedStart("Não há itens para esse nível/tipo. Ajuste o nível ou preencha o JSON.");
+  if (!questionPool.length) {
+    resetToNeedStart("Não há questões para esta combinação. Tente outro nível ou modalidade.");
     return;
   }
 
-  if(!canBuild4Options(type)){
-    resetToNeedStart("Ainda não consigo gerar 4 alternativas distintas para esse tipo. Adicione mais itens (ou aceite misturar mais tipos).");
+  if (!canBuildOptions(type)) {
+    resetToNeedStart("Ainda não há alternativas suficientes para montar este treino.");
     return;
   }
 
-  // inicia rodada (prova)
   roundActive = true;
   roundTotal = questionPool.length;
   roundHits = 0;
   roundMisses = 0;
-  roundIndex = 0;
+  roundIndex = 1;
+
+  document.body.classList.add("round-running");
 
   const item = pickNextQuestion();
-  if(!item){
-    resetToNeedStart("Não consegui sortear uma questão. Verifique os dados.");
+  if (!item) {
+    resetToNeedStart("Não foi possível sortear uma questão.");
     return;
   }
 
-  roundIndex++;
   renderQuestion(item);
+
+  scrollQuestionIntoView();
 }
 
+function finishRound() {
+  roundActive = false;
+  answered = true;
+  current = null;
+  const percentage = roundTotal ? Math.round((roundHits / roundTotal) * 100) : 0;
+  const resultTitle = percentage === 100
+    ? "Rodada perfeita!"
+    : percentage >= 90
+      ? "Excelente resultado!"
+      : percentage >= 70
+        ? "Ótima rodada!"
+        : percentage >= 50
+          ? "Bom caminho!"
+          : "Todo treino conta.";
+
+  elProgressFill.style.width = "100%";
+  elProgressText.textContent = "Rodada concluída";
+  elBadge.textContent = "Resultado";
+  elPrompt.textContent = resultTitle;
+  elQuestionHelper.textContent = `Você acertou ${roundHits} de ${roundTotal} questões nesta rodada.`;
+  elAnswers.innerHTML = "";
+  elFeedback.className = "feedback";
+  elNext.style.display = "none";
+  elVideoBox.classList.add("is-empty");
+  elVideoBox.classList.remove("is-hidden");
+  elVideoBox.innerHTML = `
+    <div class="round-result">
+      <div>
+        <div class="round-result-ring"><span>${percentage}%</span></div>
+        <h3>${escapeHtml(resultTitle)}</h3>
+        <p>${roundHits} acertos · ${roundMisses} erros · melhor sequência da sessão: ${bestStreak}</p>
+        <button class="restart-round" id="restartRound" type="button">Treinar novamente <span aria-hidden="true">↻</span></button>
+      </div>
+    </div>
+  `;
+  document.getElementById("restartRound")?.addEventListener("click", startOrRestart);
+
+  window.IpponRecords?.saveTrainingResult({
+    level: Number(elLevel.value),
+    belt: BELT_LABELS[Number(elLevel.value)] ?? String(elLevel.value),
+    modality: niceTypeLabel(elType.value),
+    modalityKey: elType.value,
+    total: roundTotal,
+    correct: roundHits,
+    wrong: roundMisses,
+    accuracy: percentage,
+    bestStreak,
+  });
+
+  if (percentage >= 70) burstConfetti(48);
+  document.body.classList.remove("round-running");
+  if (isCompactViewport()) {
+    window.requestAnimationFrame(() => {
+      document.querySelector(".round-result")?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+  }
+}
 
 elStart.addEventListener("click", startOrRestart);
 
 elNext.addEventListener("click", () => {
-  const type = elType.value;
-  if(questionPool.length === 0) return;
-  if(!canBuild4Options(type)) return;
-
+  if (!roundActive || !answered) return;
   const item = pickNextQuestion();
-
-  // se acabou o bag e está em rodada: finaliza
-  if(!item){
-    if(roundActive){
-      finishRound();
-    }
+  if (!item) {
+    finishRound();
     return;
   }
-
-  if(roundActive) roundIndex++;
+  roundIndex += 1;
   renderQuestion(item);
+  scrollQuestionIntoView();
 });
 
 elLevel.addEventListener("change", () => {
   updateTypeOptions();
-  resetToNeedStart("Mudou o nível. Clique em <code>Começar</code>.");
+  resetToNeedStart("Nível atualizado. Comece quando estiver pronto.");
+  updateSelectionPreview();
 });
 
 elType.addEventListener("change", () => {
   updateTypeOptions();
-  resetToNeedStart("Mudou o tipo. Clique em <code>Começar</code>.");
+  resetToNeedStart("Modalidade atualizada. Comece quando estiver pronto.");
+  updateAvailableCount();
 });
 
+elVocabFlip.addEventListener("change", () => {
+  resetToNeedStart("Modo de vocabulário atualizado. Comece quando estiver pronto.");
+});
 
-// Init
-if(!DATA.length){
-  resetToNeedStart("Não encontrei dados. Confirme que <code>data.js</code> está na mesma pasta e define <code>window.DATA = [...]</code>.");
-} else {
-  updateTypeOptions();
-  resetToNeedStart("Dados carregados. Clique em <code>Começar</code>.");
-}
+document.addEventListener("keydown", (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey) return;
+  if (["SELECT", "INPUT", "VIDEO"].includes(document.activeElement?.tagName)) return;
 
-function toYouTubeEmbedUrl(rawUrl){
-  try{
-    const u = new URL(String(rawUrl).trim());
-    const host = u.hostname.replace(/^www\./, "");
-
-    // youtu.be/VIDEOID
-    if(host === "youtu.be"){
-      const id = u.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://www.youtube.com/embed/${id}` : null;
+  const number = Number(event.key);
+  if (!answered && number >= 1 && number <= 9) {
+    const button = elAnswers.querySelectorAll("button.ans")[number - 1];
+    if (button && !button.disabled) {
+      event.preventDefault();
+      button.click();
     }
-
-    // youtube.com / m.youtube.com
-    if(host.endsWith("youtube.com")){
-      // watch?v=VIDEOID
-      const v = u.searchParams.get("v");
-      if(v) return `https://www.youtube.com/embed/${v}`;
-
-      // /shorts/VIDEOID
-      const shorts = u.pathname.match(/^\/shorts\/([A-Za-z0-9_-]{6,})/);
-      if(shorts) return `https://www.youtube.com/embed/${shorts[1]}`;
-
-      // /embed/VIDEOID
-      const embed = u.pathname.match(/^\/embed\/([A-Za-z0-9_-]{6,})/);
-      if(embed) return `https://www.youtube.com/embed/${embed[1]}`;
-
-      // /v/VIDEOID (formato antigo)
-      const vPath = u.pathname.match(/^\/v\/([A-Za-z0-9_-]{6,})/);
-      if(vPath) return `https://www.youtube.com/embed/${vPath[1]}`;
-
-      return null;
-    }
-
-    return null;
-  }catch{
-    return null;
-  }
-}
-
-function buildOptionsFaixaProjecao(faixaNumero){
-  // corretas = todas as técnicas de projeção dessa faixa
-  const correctItems = optionPool.filter(it => Number(it.numero_faixa) === Number(faixaNumero));
-  const correctTexts = [...new Set(correctItems.map(it => techniqueName(it)).filter(Boolean))];
-
-  const k = correctTexts.length;
-  const correctSet = new Set(correctTexts);
-
-  // distratores: 2*k de outras faixas (sem duplicar texto)
-  const allOther = optionPool.filter(it => Number(it.numero_faixa) !== Number(faixaNumero));
-  const distractors = new Set();
-
-  let guard = 0;
-  while(distractors.size < 2 * k && guard < 5000){
-    const it = allOther[randInt(allOther.length)];
-    const txt = techniqueName(it);
-    if(txt && !correctSet.has(txt)){
-      distractors.add(txt);
-    }
-    guard++;
   }
 
-  const opts = shuffle([...correctSet, ...distractors]);
-  return { opts, correctSet, k };
-}
-
-function buildOptionsComboOuContra(questionItem){
-  const correct = String(questionItem.segunda_tecnica ?? "").trim();
-  const options = new Set([correct]);
-
-  let guard = 0;
-  while(options.size < 4 && guard < 3000){
-    const it = optionPool[randInt(optionPool.length)]; // aqui optionPool já é projeção
-    const txt = techniqueName(it); // distrator = nome da técnica de projeção
-    if(txt && txt !== correct) options.add(txt);
-    guard++;
+  if (event.key === "Enter" && answered && elNext.style.display !== "none") {
+    event.preventDefault();
+    elNext.click();
   }
+});
 
-  const opts = shuffle([...options]);
-  return { opts, correct };
-}
-
-function finishRound(){
-  roundActive = false;
-
-  const total = roundTotal || 0;
-  const pct = total ? Math.round((roundHits / total) * 100) : 0;
-
-  elPrompt.textContent = `Fim da rodada. Você acertou ${roundHits} de ${total} (${pct}%).`;
-  elVideoBox.innerHTML = `<div class="placeholder">Rodada finalizada. Troque o tipo/nível e clique em Começar para outra rodada.</div>`;
-  elAnswers.innerHTML = "";
-  elNext.style.display = "none";
-
-  // Se quiser manter o placar global, não mexe em hits/misses aqui.
-  // Se quiser que rodada = placar, você pode sincronizar:
-  // hits = roundHits; misses = roundMisses;
-}
-
-const frasesJudo = [
-  "Conhecer-se é dominar-se; dominar-se é triunfar. Nas águas do rio da vida, chega mais longe quem nada quando deve, como deve e até onde deve.",
-
-  "Quem teme perder, já está vencido. Somente se aproxima da perfeição quem a procura com constância, sabedoria e, sobretudo, com humildade.",
-
-  "Quando verificares, com tristeza, que não sabes nada, terás feito teu primeiro progresso no aprendizado.",
-
-  "Nunca te orgulhes de haver vencido um adversário. Aquele que venceste hoje poderá derrotar-te amanhã. A única vitória que perdura é a que se conquista sobre a própria ignorância.",
-
-  "O verdadeiro judoca não se aperfeiçoa para lutar; luta para se aperfeiçoar. Saber cada dia um pouco e usá-lo todos os dias para o bem: este é o caminho dos verdadeiros judocas.",
-
-  "Judoca é aquele que possui inteligência para compreender aquilo que lhe ensinam, paciência para ensinar o que aprendeu aos seus semelhantes e fé para acreditar naquilo que não compreende.",
-
-  "Praticar judô é ensinar a inteligência a pensar com velocidade e exatidão, e o próprio corpo a obedecer com justeza. O corpo é uma arma cuja eficiência depende da precisão com que se usa a inteligência."
+const JUDO_QUOTES = [
+  "Conhecer-se é dominar-se; dominar-se é triunfar sobre si mesmo.",
+  "Somente se aproxima da perfeição quem a procura com constância, sabedoria e humildade.",
+  "Quando perceberes que não sabes nada, terás feito teu primeiro progresso no aprendizado.",
+  "A única vitória que perdura é a que se conquista sobre a própria ignorância.",
+  "O verdadeiro judoca não se aperfeiçoa para lutar; luta para se aperfeiçoar.",
+  "Saber cada dia um pouco e usá-lo todos os dias para o bem: este é o caminho.",
 ];
 
-function mostrarFraseAleatoria() {
-  const elemento = document.getElementById("fraseJudo");
-
-  if (!elemento) return;
-
-  const indice = Math.floor(Math.random() * frasesJudo.length);
-  elemento.textContent = frasesJudo[indice];
+function showRandomQuote() {
+  const quote = document.getElementById("fraseJudo");
+  if (quote) quote.textContent = JUDO_QUOTES[randInt(JUDO_QUOTES.length)];
 }
 
-mostrarFraseAleatoria();
+showRandomQuote();
+updateScoreboard();
 
-
-;
+if (!DATA.length) {
+  resetToNeedStart("Não encontrei os dados do quiz.");
+} else {
+  updateTypeOptions();
+  resetToNeedStart("Configure sua rodada ao lado e aperte “Começar treino”.");
+  updateSelectionPreview();
+}

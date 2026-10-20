@@ -749,7 +749,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "SODÊ-TSURI-KOMI-GOSHI",
-    "link": "videos/SODÊ-TSURI-KOMI-GOSHI.mp4",
+    "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -759,7 +759,7 @@ window.DATA = [
     "faixa": "laranja",
     "numero_faixa": 2,
     "nome": "OKURI-ASHI-BARAI",
-    "link": "videos/OKURI-ASHI-BARAI.mp4",
+    "link": "videos/teste.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -860,6 +860,16 @@ window.DATA = [
     "numero_faixa": 2,
     "nome": "KATA-GATAME 1",
     "link": "videos/KATA-GATAME 1.mp4",
+    "segunda_tecnica": null,
+    "palavra": null,
+    "significado": null
+  },
+  {
+    "tipo": "tecnica de solo",
+    "faixa": "laranja",
+    "numero_faixa": 2,
+    "nome": "KATA-GATAME 2",
+    "link": "videos/KATA-GATAME 2.mp4",
     "segunda_tecnica": null,
     "palavra": null,
     "significado": null
@@ -1076,6 +1086,26 @@ window.DATA = [
   "numero_faixa": 3,
   "nome": "HADAKA-JIME 1",
   "link": "videos/HADAKA-JIME 1.mp4",
+  "segunda_tecnica": null,
+  "palavra": null,
+  "significado": null
+},
+{
+  "tipo": "tecnica de solo",
+  "faixa": "verde",
+  "numero_faixa": 3,
+  "nome": "HADAKA-JIME 2",
+  "link": "videos/HADAKA-JIME 2.mp4",
+  "segunda_tecnica": null,
+  "palavra": null,
+  "significado": null
+},
+{
+  "tipo": "tecnica de solo",
+  "faixa": "verde",
+  "numero_faixa": 3,
+  "nome": "HADAKA-JIME 3",
+  "link": "videos/HADAKA-JIME 3.mp4",
   "segunda_tecnica": null,
   "palavra": null,
   "significado": null
