@@ -233,6 +233,7 @@
     const allVocabulary = data.filter((item) => normalize(item.tipo) === "vocabulario");
     const allProjections = data.filter((item) => normalize(item.tipo) === "tecnica de projecao");
     const projectionNames = [...new Set(allProjections.map((item) => String(item.nome ?? "").trim()).filter(Boolean))];
+    const wordPool = [...new Set(allVocabulary.map((item) => String(item.palavra ?? item.nome ?? "").trim()).filter(Boolean))];
     const meaningPool = [...new Set(allVocabulary.map((item) => String(item.significado ?? "").trim()).filter(Boolean))];
     const groups = {
       vocabulary: [],
@@ -249,19 +250,34 @@
 
       if (type === "vocabulario") {
         const word = String(item.palavra ?? item.nome ?? "").trim();
-        const correct = String(item.significado ?? "").trim();
-        if (!word || !correct) return;
-        const options = choiceOptions(correct, meaningPool);
+        const meaning = String(item.significado ?? "").trim();
+        if (!word || !meaning) return;
+
+        const isFounderQuestion = normalize(word) === "jigoro kano";
+        const asksForJapanese = !isFounderQuestion && Math.random() < 0.5;
+        const correct = asksForJapanese ? word : meaning;
+        const options = choiceOptions(correct, asksForJapanese ? wordPool : meaningPool);
         if (!options.length) return;
+
         groups.vocabulary.push({
-          id: itemId,
-          category: "Vocabulário",
-          prompt: normalize(word) === "jigoro kano" ? "Quem é o fundador do judô?" : `O que significa “${word}”?`,
-          helper: "Escolha uma alternativa.",
-          options: normalize(word) === "jigoro kano"
+          id: `${itemId}|${asksForJapanese ? "pt-jp" : "jp-pt"}`,
+          category: isFounderQuestion
+            ? "Vocabulário"
+            : `Vocabulário · ${asksForJapanese ? "Português → Japonês" : "Japonês → Português"}`,
+          prompt: isFounderQuestion
+            ? "Quem é o fundador do judô?"
+            : asksForJapanese
+              ? `Qual é o termo em japonês para “${meaning}”?`
+              : `O que significa “${word}”?`,
+          helper: isFounderQuestion
+            ? "Escolha o nome correto."
+            : asksForJapanese
+              ? "Escolha o termo em japonês correto."
+              : "Escolha o significado em português.",
+          options: isFounderQuestion
             ? shuffle(["Jigoro Kano", "Julio Nagaita", "Hagio Taje", "Josmar Amaral"])
             : options,
-          correct: normalize(word) === "jigoro kano" ? "Jigoro Kano" : correct,
+          correct: isFounderQuestion ? "Jigoro Kano" : correct,
           media: null,
         });
         return;
